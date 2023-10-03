@@ -46,9 +46,9 @@ jobs:
               id: download-spc-artifact
               uses: dawidd6/action-download-artifact@v2
               with:
-                  repo: crazywhalecc/static-php-cli-hosted
-                  branch: master
-                  workflow: build-arm-macos-release.yml
+                  repo: "${{ matrix.operating-system === 'self-hosted' ? 'crazywhalecc/static-php-cli-hosted' : 'crazywhalecc/static-php-cli' }}" 
+                  branch: "${{ matrix.operating-system === 'self-hosted' ? 'master' : 'main' }}"
+                  workflow: "${{ matrix.operating-system === 'self-hosted' ? 'build-arm-macos-release.yml' : 'release-build.yml' }}"
                   name: "spc-${{ env.OS }}"
 
             - name: Validate SPC bin
