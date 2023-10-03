@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
+        with:
+          repository: crazywhalecc/static-php-cli
 
       - name: "Get Composer Cache Directory"
         id: composer-cache
