@@ -16,7 +16,7 @@ jobs:
         php-version:
           - "8.1"
         operating-system:
-          - "macos-self-vm"
+          - "self-hosted"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
