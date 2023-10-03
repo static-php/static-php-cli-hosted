@@ -21,6 +21,7 @@ jobs:
                 operating-system:
                     - "ubuntu-latest"
                     - "macos-latest"
+                    - "self-hosted"
                 extensions: 
                     - bcmath,bz2,calendar,ctype,curl,dom,exif,fileinfo,filter,ftp,gd,gmp,iconv,xml,mbstring,mbregex,mysqlnd,openssl,pcntl,pdo,pdo_mysql,pdo_sqlite,phar,posix,redis,session,simplexml,soap,sockets,sqlite3,tokenizer,xmlwriter,xmlreader,zlib,zip
 
@@ -36,6 +37,8 @@ jobs:
                       OS="linux-x86_64"
                   elif [ "${{ matrix.operating-system }}" = "macos-latest" ]; then
                       OS="macos-x86_64"
+                  elif [ "${{ matrix.operating-system }}" = "self-hosted" ]; then
+                      OS="macos-aarch64"
                   fi
                   echo "OS=$OS" >> $GITHUB_ENV
 
@@ -43,9 +46,9 @@ jobs:
               id: download-spc-artifact
               uses: dawidd6/action-download-artifact@v2
               with:
-                  repo: crazywhalecc/static-php-cli
-                  branch: main
-                  workflow: release-build.yml
+                  repo: crazywhalecc/static-php-cli-hosted
+                  branch: master
+                  workflow: build-arm-macos-release.yml
                   name: "spc-${{ env.OS }}"
 
             - name: Validate SPC bin
