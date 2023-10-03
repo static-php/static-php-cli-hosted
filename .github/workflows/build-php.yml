@@ -42,7 +42,7 @@ jobs:
                   fi
                   echo "OS=$OS" >> $GITHUB_ENV
 
-            - if: matrix.operating-system !== 'self-hosted'
+            - if: ${{ matrix.operating-system != 'self-hosted' }}
               name: Download SPC bin artifact
               uses: dawidd6/action-download-artifact@v2
               with:
@@ -51,7 +51,7 @@ jobs:
                   workflow: release-build.yml
                   name: "spc-${{ env.OS }}"
         
-            - if: matrix.operating-system === 'self-hosted'
+            - if: ${{ matrix.operating-system == 'self-hosted' }}
               name: Download SPC bin artifact
               uses: dawidd6/action-download-artifact@v2
               with:
