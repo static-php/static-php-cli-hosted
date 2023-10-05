@@ -17,6 +17,7 @@ jobs:
           - "8.1"
         operating-system:
           - "debian-arm64-self-hosted"
+          - "macos-arm64-self-hosted"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -54,7 +55,11 @@ jobs:
 
       - name: "Archive Executable"
         run: |
-          OS="linux-aarch64"
+          if [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
+              OS="linux-aarch64"
+          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
+              OS="macos-aarch64"
+          fi
           tar -czf spc-$OS.tar.gz spc
           echo "filename=spc-$OS.tar.gz" >> $GITHUB_ENV
           echo "OS=$OS" >> $GITHUB_ENV
