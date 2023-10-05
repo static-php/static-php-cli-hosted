@@ -44,7 +44,7 @@ jobs:
                   fi
                   echo "OS=$OS" >> $GITHUB_ENV
 
-            - if: ${{ matrix.operating-system != 'self-hosted' }}
+            - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
               name: Download SPC bin artifact
               uses: dawidd6/action-download-artifact@v2
               with:
@@ -53,7 +53,7 @@ jobs:
                   workflow: release-build.yml
                   name: "spc-${{ env.OS }}"
         
-            - if: ${{ matrix.operating-system == 'self-hosted' }}
+            - if: ${{ matrix.operating-system == 'debian-arm64-self-hosted' || matrix.operating-system == 'macos-arm64-self-hosted' }}
               name: Download SPC bin artifact
               uses: dawidd6/action-download-artifact@v2
               with:
