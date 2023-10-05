@@ -72,6 +72,8 @@ jobs:
 
       - if: steps.cache-download-spc-necessary.outputs.cache-hit != 'true'
         name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib
 
       - name: "Build phpmicro"
