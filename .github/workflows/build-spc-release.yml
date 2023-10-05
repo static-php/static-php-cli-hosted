@@ -11,11 +11,12 @@ jobs:
     name: "Build Release Artifacts"
     runs-on: ${{ matrix.operating-system }}
     strategy:
-      fail-fast: false
       matrix:
         php-version:
           - "8.1"
         operating-system:
+          - "ubuntu-latest"
+          - "macos-latest"
           - "debian-arm64-self-hosted"
           - "macos-arm64-self-hosted"
     steps:
@@ -23,6 +24,30 @@ jobs:
         uses: "actions/checkout@v4"
         with:
           repository: crazywhalecc/static-php-cli
+
+      - name: OS type
+        id: os-type
+        run: |
+          OS=""
+          if [ "${{ matrix.operating-system }}" = "ubuntu-latest" ]; then
+              OS="linux-x86_64"
+          elif [ "${{ matrix.operating-system }}" = "macos-latest" ]; then
+              OS="macos-x86_64"
+          elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
+              OS="linux-aarch64"
+          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
+              OS="macos-aarch64"
+          fi
+          echo "OS=$OS" >> $GITHUB_ENV
+
+      - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
+        name: "Install PHP for official runners"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: none
+          tools: composer:v2
+          php-version: "${{ matrix.php-version }}"
+          ini-values: memory_limit=-1
 
       - name: "Get Composer Cache Directory"
         id: composer-cache
@@ -39,7 +64,14 @@ jobs:
       - name: "Install locked dependencies"
         run: "composer install --no-interaction --no-progress"
 
-      - name: "Download sources"
+      - id: cache-download-spc-necessary
+        uses: actions/cache@v3
+        with:
+          path: downloads
+          key: spc-dependencies
+
+      - if: steps.cache-download-spc-necessary.outputs.cache-hit != 'true'
+        name: "Download sources"
         run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib
 
       - name: "Build phpmicro"
@@ -55,11 +87,6 @@ jobs:
 
       - name: "Archive Executable"
         run: |
-          if [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
-              OS="linux-aarch64"
-          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
-              OS="macos-aarch64"
-          fi
           tar -czf spc-$OS.tar.gz spc
           echo "filename=spc-$OS.tar.gz" >> $GITHUB_ENV
           echo "OS=$OS" >> $GITHUB_ENV
