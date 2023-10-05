@@ -21,7 +21,8 @@ jobs:
                 operating-system:
                     - "ubuntu-latest"
                     - "macos-latest"
-                    - "self-hosted"
+                    - "debian-arm64-self-hosted"
+                    - "macos-arm64-self-hosted"
                 extensions: 
                     - bcmath,bz2,calendar,ctype,curl,dom,exif,fileinfo,filter,ftp,gd,gmp,iconv,xml,mbstring,mbregex,mysqlnd,openssl,pcntl,pdo,pdo_mysql,pdo_sqlite,phar,posix,redis,session,simplexml,soap,sockets,sqlite3,tokenizer,xmlwriter,xmlreader,zlib,zip
 
@@ -37,7 +38,9 @@ jobs:
                       OS="linux-x86_64"
                   elif [ "${{ matrix.operating-system }}" = "macos-latest" ]; then
                       OS="macos-x86_64"
-                  elif [ "${{ matrix.operating-system }}" = "self-hosted" ]; then
+                  elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
+                      OS="linux-aarch64"
+                  elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
                       OS="macos-aarch64"
                   fi
                   echo "OS=$OS" >> $GITHUB_ENV
