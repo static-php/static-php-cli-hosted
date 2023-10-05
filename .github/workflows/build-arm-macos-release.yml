@@ -16,7 +16,7 @@ jobs:
         php-version:
           - "8.1"
         operating-system:
-          - "self-hosted"
+          - "debian-arm64-self-hosted"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -54,7 +54,7 @@ jobs:
 
       - name: "Archive Executable"
         run: |
-          OS="macos-aarch64"
+          OS="linux-aarch64"
           tar -czf spc-$OS.tar.gz spc
           echo "filename=spc-$OS.tar.gz" >> $GITHUB_ENV
           echo "OS=$OS" >> $GITHUB_ENV
