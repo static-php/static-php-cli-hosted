@@ -45,7 +45,7 @@ jobs:
                   echo "OS=$OS" >> $GITHUB_ENV
 
             - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
-              name: Download SPC bin artifact
+              name: Download SPC bin artifact for GitHub-hosted runners
               uses: dawidd6/action-download-artifact@v2
               with:
                   repo: crazywhalecc/static-php-cli
@@ -54,7 +54,7 @@ jobs:
                   name: "spc-${{ env.OS }}"
         
             - if: ${{ matrix.operating-system == 'debian-arm64-self-hosted' || matrix.operating-system == 'macos-arm64-self-hosted' }}
-              name: Download SPC bin artifact
+              name: Download SPC bin artifact for self-hosted runners
               uses: dawidd6/action-download-artifact@v2
               with:
                   repo: crazywhalecc/static-php-cli-hosted
@@ -81,7 +81,7 @@ jobs:
             - name: "Build library: ${{ matrix.library }}"
               run: |
                   SPC_USE_SUDO=yes ./spc doctor --auto-fix
-                  ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }}
+                  ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }} --debug
                   PHPVER=$(cat source/php-src/main/php_version.h | grep "PHP_VERSION " | awk -F\" '{print $2}')
                   mkdir dist/
                   tar -czf dist/php-$PHPVER-cli-$OS.tar.gz -C buildroot/bin/ php
