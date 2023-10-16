@@ -94,7 +94,18 @@ jobs:
           echo "OS=$OS" >> $GITHUB_ENV
 
       - name: "Test Micro file"
-        run: "./spc dev:extensions"
+        run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/"
+
+      - name: Deploy to Zhamao Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          ARGS: "-rltgoDzvO"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          REMOTE_PORT: ${{ secrets.DEPLOY_SERVER_PORT }}
+          REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_SPC_NIGHTLY }}
 
       - name: upload binaries to release
         uses: softprops/action-gh-release@v1
