@@ -1,4 +1,4 @@
-name: Build Release Artifacts
+name: Build Standalone SPC Binaries
 
 on:
   release:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-release-artifacts:
-    name: "Build Release Artifacts"
+    name: "Build Standalone SPC Binaries"
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
@@ -25,7 +25,7 @@ jobs:
         with:
           repository: crazywhalecc/static-php-cli
 
-      - name: OS type
+      - name: Convert OS Name
         id: os-type
         run: |
           OS=""
@@ -61,27 +61,28 @@ jobs:
           key: "php-${{ matrix.php-version }}-locked-composer-${{ hashFiles('**/composer.lock') }}"
           restore-keys: |
             php-${{ matrix.php-version }}-locked-composer-
-      - name: "Install locked dependencies"
+      - name: "Install Locked Dependencies"
         run: "composer install --no-interaction --no-progress"
 
       - id: cache-download-spc-necessary
+        name: "Cache Downloaded Sources"
         uses: actions/cache@v3
         with:
           path: downloads
           key: spc-dependencies
 
       - if: steps.cache-download-spc-necessary.outputs.cache-hit != 'true'
-        name: "Download sources"
+        name: "Download Sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib
 
-      - name: "Build phpmicro"
+      - name: "Build micro.sfx"
         run: |
           SPC_USE_SUDO=yes bin/spc doctor --auto-fix
           bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro
 
-      - name: "Build PHAR file"
+      - name: "Build PHAR File"
         run: "composer build:phar"
 
       - name: "Generate Executable"
@@ -96,7 +97,7 @@ jobs:
       - name: "Test Micro file"
         run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/"
 
-      - name: Deploy to Zhamao Server
+      - name: "Deploy to Self-Hosted Server"
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
@@ -107,13 +108,13 @@ jobs:
           REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
           TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_SPC_NIGHTLY }}
 
-      - name: upload binaries to release
+      - name: "Upload SPC Binary to GitHub Release"
         uses: softprops/action-gh-release@v1
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
           files: ${{ env.filename }}
 
-      - name: "Upload Artifact"
+      - name: "Upload Actions Artifact"
         uses: actions/upload-artifact@v3
         with:
           path: spc
