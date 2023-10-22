@@ -1,10 +1,6 @@
-name: Build Self-Hosted PHP Binary
+name: Build Self-Hosted Common PHP Binary
 
 on:
-    push:
-        branches: [ "master" ]
-    pull_request:
-        branches: [ "master" ]
     workflow_dispatch:
 
 jobs:
