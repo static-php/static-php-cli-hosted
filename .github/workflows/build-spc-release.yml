@@ -75,12 +75,12 @@ jobs:
         name: "Download Sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib
+        run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib --debug
 
       - name: "Build micro.sfx"
         run: |
           SPC_USE_SUDO=yes bin/spc doctor --auto-fix
-          bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro
+          bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro --debug
 
       - name: "Build PHAR File"
         run: "composer build:phar"
