@@ -1,4 +1,4 @@
-name: Build Self-Hosted Common PHP Binary
+name: Build Self-Hosted PHP Binary (common)
 
 on:
     workflow_dispatch:
@@ -39,23 +39,13 @@ jobs:
                       OS="macos-aarch64"
                   fi
                   echo "OS=$OS" >> $GITHUB_ENV
-
-            - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
-              name: Download SPC bin artifact for GitHub-hosted runners
-              uses: dawidd6/action-download-artifact@v2
-              with:
-                  repo: crazywhalecc/static-php-cli
-                  branch: main
-                  workflow: release-build.yml
-                  name: "spc-${{ env.OS }}"
         
-            - if: ${{ matrix.operating-system == 'debian-arm64-self-hosted' || matrix.operating-system == 'macos-arm64-self-hosted' }}
-              name: Download SPC bin artifact for self-hosted runners
+            - name: Download SPC bin artifact for self-hosted runners
               uses: dawidd6/action-download-artifact@v2
               with:
                   repo: crazywhalecc/static-php-cli-hosted
                   branch: master
-                  workflow: build-arm-macos-release.yml
+                  workflow: build-spc-release.yml
                   name: "spc-${{ env.OS }}"
 
             - name: Validate SPC bin
