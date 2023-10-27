@@ -5,6 +5,9 @@ on:
     types:
       - published
   workflow_dispatch:
+    inputs:
+        debug:
+         type: boolean
 
 jobs:
   build-release-artifacts:
@@ -39,6 +42,10 @@ jobs:
               OS="macos-aarch64"
           fi
           echo "OS=$OS" >> $GITHUB_ENV
+
+      # With or without debug
+      - if: inputs.debug == true
+        run: echo "SPC_BUILD_DEBUG=--debug" >> $GITHUB_ENV
 
       - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
         name: "Install PHP for official runners"
@@ -75,12 +82,12 @@ jobs:
         name: "Download Sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib --debug
+        run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib ${{ env.SPC_BUILD_DEBUG }}
 
       - name: "Build micro.sfx"
         run: |
           SPC_USE_SUDO=yes bin/spc doctor --auto-fix
-          bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro --debug
+          bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro ${{ env.SPC_BUILD_DEBUG }}
 
       - name: "Build PHAR File"
         run: "composer build:phar"
