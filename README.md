@@ -17,4 +17,4 @@ all workflows are currently triggered manually.
 ## List of Actions
 
 - [Build spc binary files](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-spc-release.yml)
-- [Build PHP with common extensions](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-common-php.yml)
+- [Build PHP with common extensions](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-common.yml)
