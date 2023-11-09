@@ -82,6 +82,8 @@ jobs:
 
       # If there's no dependencies cache, fetch sources
       - name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: ./bin/spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
 
       - name: "Build test for extensions"
