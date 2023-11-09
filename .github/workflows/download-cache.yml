@@ -1,0 +1,59 @@
+name: Archive download sources weekly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 5"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  download:
+    name: Archive downloads to zip
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ "7.4", "8.0", "8.1", "8.2" ]
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+        with:
+          repository: crazywhalecc/static-php-cli
+
+      # Cache composer dependencies
+      - id: cache-composer-deps
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-dependencies
+
+      # If there's no Composer cache, install dependencies
+      - if: steps.cache-composer-deps.outputs.cache-hit != 'true'
+        run: composer update --no-dev
+
+      # If there's no dependencies cache, fetch sources, with or without debug
+      - if: steps.cache-download.outputs.cache-hit != 'true'
+        run: ./bin/spc download --with-php=${{ matrix.php-version }} --all --debug
+
+      # Upload downloaded files
+      - uses: actions/upload-artifact@v3
+        with:
+          name: download-files-${{ matrix.php-version }}
+          path: downloads/
+
+      - name: Archive downloads
+        run: |
+          zip -r download-files-${{ matrix.php-version }}.zip downloads/
+          mkdir downloads-archive/
+          mv download-files-${{ matrix.php-version }}.zip downloads-archive/
+
+      - uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          ARGS: "-rltgoDzvO"
+          SOURCE: "downloads-archive/"
+          REMOTE_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          REMOTE_PORT: ${{ secrets.DEPLOY_SERVER_PORT }}
+          REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_DOWNLOAD_CACHE }}
