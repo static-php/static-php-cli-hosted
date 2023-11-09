@@ -46,9 +46,11 @@ jobs:
 
       - name: Archive downloads
         run: |
-          zip -r download-files-${{ matrix.php-version }}.zip downloads/
-          mkdir downloads-archive/
-          mv download-files-${{ matrix.php-version }}.zip downloads-archive/
+          cd downloads/
+          zip -r download-files-${{ matrix.php-version }}.zip .
+          mkdir ../downloads-archive/
+          mv download-files-${{ matrix.php-version }}.zip ../downloads-archive/
+          cd ..
 
       - uses: easingthemes/ssh-deploy@main
         env:
