@@ -66,8 +66,19 @@ jobs:
         with:
           coverage: none
           tools: composer:v2
-          php-version: "${{ matrix.php-version }}"
+          php-version: 8.2
           ini-values: memory_limit=-1
+
+      # Cache composer dependencies
+      - id: cache-composer-deps
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-dependencies
+
+      # If there's no Composer cache, install dependencies
+      - if: steps.cache-composer-deps.outputs.cache-hit != 'true'
+        run: composer update --no-dev --classmap-authoritative
 
       # If there's no dependencies cache, fetch sources
       - name: "Download sources"
