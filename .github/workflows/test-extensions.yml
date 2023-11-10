@@ -64,7 +64,7 @@ jobs:
       - name: "Download sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: ./bin/spc download --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
+        run: ./bin/spc download --all ${{ env.SPC_BUILD_DEBUG }}
 
       - name: "Remove PHP"
         run: rm downloads/php-*.tar.gz
