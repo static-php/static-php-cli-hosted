@@ -31,7 +31,10 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: "Calculate hash of input extensions"
-        run: echo "INPUT_HASH=$(echo '${{ inputs.added-extensions }}:${{ inputs.repo }}:${{ inputs.branch }}' | md5sum | awk '{print $1}')" >> $GITHUB_ENV
+        id: set_input_hash
+        run: |
+          echo "INPUT_HASH=$(echo '${{ inputs.added-extensions }}:${{ inputs.repo }}:${{ inputs.branch }}' | md5sum | awk '{print $1}')" >> $GITHUB_ENV
+          echo "${{ env.INPUT_HASH }}"
       
       - name: "Check if --debug is enabled"
         if: inputs.debug == true
@@ -107,7 +110,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: downloads
-          key: source-downloads-${{ env.INPUT_HASH }}
+          fail-on-cache-miss: true
+          key: source-downloads-${{ needs.download.outputs.set_input_hash }}
 
       - name: OS type
         id: os-type
