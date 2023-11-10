@@ -29,6 +29,9 @@ jobs:
         with:
           repository: ${{ inputs.repo }}
           ref: ${{ inputs.branch }}
+
+      - name: "Calculate hash of input extensions"
+        run: echo "INPUT_HASH=$(echo '${{ inputs.added-extensions }}:${{ inputs.repo }}:${{ inputs.branch }}' | md5sum | awk '{print $1}')" >> $GITHUB_ENV
       
       - name: "Check if --debug is enabled"
         if: inputs.debug == true
@@ -55,13 +58,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: downloads
-          key: source-downloads
+          key: source-downloads-${{ env.INPUT_HASH }}
 
       - name: "Install composer dependencies"
         if: steps.cache-composer-deps.outputs.cache-hit != 'true'
         run: "composer update --no-dev --classmap-authoritative"
 
       - name: "Download sources"
+        if: steps.cache-download-sources.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: ./bin/spc download --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
