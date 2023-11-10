@@ -19,9 +19,60 @@ on:
         default: main
 
 jobs:
+  download:
+    name: "Download files (except PHP)"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Checkout repo"
+        uses: "actions/checkout@v4"
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ inputs.branch }}
+      
+      - name: "Check if --debug is enabled"
+        if: inputs.debug == true
+        run: echo "SPC_BUILD_DEBUG=--debug" >> $GITHUB_ENV
+
+      - name: "Install PHP for official runners"
+        if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: none
+          tools: composer:v2
+          php-version: 8.2
+          ini-values: memory_limit=-1
+
+      - name: "Cache composer dependencies"
+        id: cache-composer-deps
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-dependencies
+
+      - name: "Cache download sources"
+        id: cache-download-sources
+        uses: actions/cache@v3
+        with:
+          path: downloads
+          key: source-downloads
+
+      - name: "Install composer dependencies"
+        if: steps.cache-composer-deps.outputs.cache-hit != 'true'
+        run: "composer update --no-dev --classmap-authoritative"
+
+      - name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
+        run: ./bin/spc download --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
+
+      - name: "Remove PHP"
+        run: rm downloads/php-*.tar.gz
+
   build-release-artifacts:
     name: "Build ${{ matrix.php-version }} on ${{ matrix.operating-system }}"
     runs-on: ${{ matrix.operating-system }}
+    needs: download
     strategy:
       matrix:
         php-version:
@@ -33,13 +84,26 @@ jobs:
           - "macos-latest"
           - "debian-arm64-self-hosted"
           - "macos-arm64-self-hosted"
-
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
         with:
           repository: ${{ inputs.repo }}
           ref: ${{ inputs.branch }}
+
+      - name: "Cache composer dependencies"
+        id: cache-composer-deps
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-dependencies
+
+      - name: "Cache download sources"
+        id: cache-download-sources
+        uses: actions/cache@v3
+        with:
+          path: downloads
+          key: source-downloads
 
       - name: OS type
         id: os-type
@@ -69,24 +133,8 @@ jobs:
           php-version: 8.2
           ini-values: memory_limit=-1
 
-      # Cache composer dependencies
-      - id: cache-composer-deps
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: composer-dependencies
-
-      # If there's no Composer cache, install dependencies
-      - if: steps.cache-composer-deps.outputs.cache-hit != 'true'
-        run: composer update --no-dev --classmap-authoritative
-
-      # If there's no dependencies cache, fetch sources
-      - name: "Download sources"
-        env:
-          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: ./bin/spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
-
       - name: "Build test for extensions"
         run: |
           SPC_USE_SUDO=yes ./bin/spc doctor --auto-fix
+          ./bin/spc download --all --with-php=${{ matrix.php-version }}
           ./bin/spc build --build-cli --build-micro --build-fpm ${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
