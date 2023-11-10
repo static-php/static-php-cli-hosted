@@ -25,7 +25,6 @@ jobs:
     outputs:
       input_hash: ${{ steps.set_input_hash.outputs.input_hash }}
     steps:
-
       - name: "Checkout repo"
         uses: "actions/checkout@v4"
         with:
