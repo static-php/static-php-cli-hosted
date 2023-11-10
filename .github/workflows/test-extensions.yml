@@ -22,6 +22,8 @@ jobs:
   download:
     name: "Download files (except PHP)"
     runs-on: ubuntu-latest
+    outputs:
+      input_hash: ${{ steps.set_input_hash.outputs.input_hash }}
     steps:
 
       - name: "Checkout repo"
@@ -34,7 +36,7 @@ jobs:
         id: set_input_hash
         run: |
           echo "INPUT_HASH=$(echo '${{ inputs.added-extensions }}:${{ inputs.repo }}:${{ inputs.branch }}' | md5sum | awk '{print $1}')" >> $GITHUB_ENV
-          echo "${{ env.INPUT_HASH }}"
+          echo "::set-output name=input_hash::${{ env.INPUT_HASH }}"
       
       - name: "Check if --debug is enabled"
         if: inputs.debug == true
@@ -104,13 +106,15 @@ jobs:
           path: vendor
           key: composer-dependencies
 
+      - name: "Using input hash ${{ needs.download.outputs.input_hash }}"
+
       - name: "Cache download sources"
         id: cache-download-sources
         uses: actions/cache@v3
         with:
           path: downloads
           fail-on-cache-miss: true
-          key: source-downloads-${{ needs.download.outputs.set_input_hash }}
+          key: source-downloads-${{ needs.download.outputs.input_hash }}
 
       - name: OS type
         id: os-type
