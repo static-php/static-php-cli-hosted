@@ -107,7 +107,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: downloads
-          key: source-downloads
+          key: source-downloads-${{ env.INPUT_HASH }}
 
       - name: OS type
         id: os-type
