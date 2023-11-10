@@ -106,6 +106,7 @@ jobs:
           key: composer-dependencies
 
       - name: "Using input hash ${{ needs.download.outputs.input_hash }}"
+        run: echo "${{ needs.download.outputs.input_hash }}"
 
       - name: "Cache download sources"
         id: cache-download-sources
