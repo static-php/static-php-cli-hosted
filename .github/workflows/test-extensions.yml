@@ -144,6 +144,10 @@ jobs:
           php-version: 8.2
           ini-values: memory_limit=-1
 
+      - name: "Install composer dependencies"
+        if: steps.cache-composer-deps.outputs.cache-hit != 'true'
+        run: "composer update --no-dev --classmap-authoritative"
+
       - name: "Build test for extensions"
         run: |
           SPC_USE_SUDO=yes ./bin/spc doctor --auto-fix
