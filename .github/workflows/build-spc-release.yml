@@ -101,8 +101,8 @@ jobs:
           echo "filename=spc-$OS.tar.gz" >> $GITHUB_ENV
           echo "OS=$OS" >> $GITHUB_ENV
 
-      - name: "Test Micro file"
-        run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/"
+      - name: "Copy file"
+        run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/ && cp spc dist/spc-$OS"
 
       - name: "Deploy to Self-Hosted Server"
         uses: easingthemes/ssh-deploy@main
