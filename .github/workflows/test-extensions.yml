@@ -74,6 +74,7 @@ jobs:
         run: ./bin/spc download --for-extensions=${{ inputs.added-extensions }} ${{ env.SPC_BUILD_DEBUG }}
 
       - name: "Remove PHP"
+        if: steps.cache-download-sources.outputs.cache-hit != 'true'
         run: rm downloads/php-*.tar.gz
 
   build-release-artifacts:
