@@ -1,4 +1,4 @@
-name: Build Self-Hosted PHP Binary (huge)
+name: Build Self-Hosted PHP Binary (bulk)
 
 on:
   workflow_dispatch:
@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: downloads
-          key: php-${{ matrix.php-version }}-dependencies-for-huge-extensions
+          key: php-${{ matrix.php-version }}-dependencies-for-bulk-extensions
       
       # If there's no dependencies cache, fetch sources
       - if: steps.cache-download.outputs.cache-hit != 'true'
