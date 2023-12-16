@@ -7,48 +7,34 @@ on:
   workflow_dispatch:
     inputs:
         debug:
-         type: boolean
+          type: boolean
 
 jobs:
   build-release-artifacts:
     name: "Build Standalone SPC Binaries"
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-version:
           - "8.1"
+        micro-version:
+          - "8.1.26"
         operating-system:
-          - "ubuntu-latest"
-          - "macos-latest"
-          - "debian-arm64-self-hosted"
-          - "macos-arm64-self-hosted"
+          - "linux-x86_64"
+          - "linux-aarch64"
+          - "macos-x86_64"
+          - "macos-aarch64"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
         with:
           repository: crazywhalecc/static-php-cli
 
-      - name: Convert OS Name
-        id: os-type
-        run: |
-          OS=""
-          if [ "${{ matrix.operating-system }}" = "ubuntu-latest" ]; then
-              OS="linux-x86_64"
-          elif [ "${{ matrix.operating-system }}" = "macos-latest" ]; then
-              OS="macos-x86_64"
-          elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
-              OS="linux-aarch64"
-          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
-              OS="macos-aarch64"
-          fi
-          echo "OS=$OS" >> $GITHUB_ENV
-
       # With or without debug
       - if: inputs.debug == true
         run: echo "SPC_BUILD_DEBUG=--debug" >> $GITHUB_ENV
 
-      - if: ${{ matrix.operating-system == 'macos-latest' || matrix.operating-system == 'ubuntu-latest' }}
-        name: "Install PHP for official runners"
+      - name: "Install PHP for official runners"
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: none
@@ -71,35 +57,24 @@ jobs:
       - name: "Install Locked Dependencies"
         run: "composer install --no-interaction --no-progress"
 
-      - id: cache-download-spc-necessary
-        name: "Cache Downloaded Sources"
-        uses: actions/cache@v3
-        with:
-          path: downloads
-          key: spc-dependencies
-
-      - if: steps.cache-download-spc-necessary.outputs.cache-hit != 'true'
-        name: "Download Sources"
-        env:
-          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: bin/spc download --with-php=${{ matrix.php-version }} php-src,micro,pkg-config,onig,zlib ${{ env.SPC_BUILD_DEBUG }}
-
-      - name: "Build micro.sfx"
-        run: |
-          SPC_USE_SUDO=yes bin/spc doctor --auto-fix
-          bin/spc build pcntl,posix,mbstring,tokenizer,phar --build-micro ${{ env.SPC_BUILD_DEBUG }}
-
       - name: "Build PHAR File"
         run: "composer build:phar"
 
+      - name: "Download minimal combination"
+        run: |
+          curl https://dl.static-php.dev/static-php-cli/minimal/php-${{ matrix.micro-version }}-micro-${{ matrix.operating-system }}.tar.gz -o tmp.tgz
+          tar -zxvf tmp.tgz
+
       - name: "Generate Executable"
-        run: "bin/spc micro:combine spc.phar -O spc"
+        run: |
+          cat micro.sfx spc.phar > spc
+          chmod +x spc
 
       - name: "Archive Executable"
         run: |
-          tar -czf spc-$OS.tar.gz spc
-          echo "filename=spc-$OS.tar.gz" >> $GITHUB_ENV
-          echo "OS=$OS" >> $GITHUB_ENV
+          tar -czf spc-${{ matrix.operating-system }}.tar.gz spc
+          echo "filename=spc-${{ matrix.operating-system }}.tar.gz" >> $GITHUB_ENV
+          echo "OS=${{ matrix.operating-system }}" >> $GITHUB_ENV
 
       - name: "Copy file"
         run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/ && cp spc dist/spc-$OS"
