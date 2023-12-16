@@ -8,6 +8,7 @@ jobs:
     name: "Build ${{ matrix.php-version }} on ${{ matrix.operating-system }}"
     runs-on: ${{ matrix.operating-system }}
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.0"
