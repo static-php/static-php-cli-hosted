@@ -75,9 +75,12 @@ jobs:
           tar -czf spc-${{ matrix.operating-system }}.tar.gz spc
           echo "filename=spc-${{ matrix.operating-system }}.tar.gz" >> $GITHUB_ENV
           echo "OS=${{ matrix.operating-system }}" >> $GITHUB_ENV
+          if [ "${{ matrix.operating-system }}" == "linux-x86_64" ]; then
+            ./spc dev:extensions
+          fi
 
       - name: "Copy file"
-        run: "./spc dev:extensions && mkdir dist/ && cp ${{ env.filename }} dist/ && cp spc dist/spc-$OS"
+        run: "mkdir dist/ && cp ${{ env.filename }} dist/ && cp spc dist/spc-$OS"
 
       - name: "Deploy to Self-Hosted Server"
         uses: easingthemes/ssh-deploy@main
