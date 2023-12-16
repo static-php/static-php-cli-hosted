@@ -76,6 +76,11 @@ jobs:
           tar -czf dist/php-$PHPVER-cli-$OS.tar.gz -C buildroot/bin/ php
           tar -czf dist/php-$PHPVER-micro-$OS.tar.gz -C buildroot/bin/ micro.sfx
           tar -czf dist/php-$PHPVER-fpm-$OS.tar.gz -C buildroot/bin/ php-fpm
+          if [ "${{ matrix.php-version }}" == "8.3" ] && [ "${{ matrix.operating-system }}" == "ubuntu-latest" ]; then
+            cp -r buildroot/license dist/
+            cp buildroot/build-extensions.json dist/
+            cp buildroot/build-libraries.json dist/
+          fi
 
       - name: Deploy to Zhamao Server
         uses: easingthemes/ssh-deploy@main
