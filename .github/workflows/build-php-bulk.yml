@@ -86,7 +86,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
           REMOTE_PORT: ${{ secrets.DEPLOY_SERVER_PORT }}
           REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
-          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET }}
+          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_BULK }}
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
