@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       add_extensions:
-        description: extensions to add (comma separated)
+        description: extensions to add (comma start if add)
         type: string
         default: ''
       without_deploy:
@@ -73,12 +73,12 @@ jobs:
         name: "Download sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extensions }}
+        run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extensions }}${{ inputs.add_extensions }}
 
       - name: "Build library: ${{ matrix.library }}"
         run: |
           SPC_USE_SUDO=yes ./spc doctor --auto-fix
-          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }} --debug
+          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }}${{ inputs.add_extensions }} --debug
           PHPVER=$(cat source/php-src/main/php_version.h | grep "PHP_VERSION " | awk -F\" '{print $2}')
           mkdir dist/
           tar -czf dist/php-$PHPVER-cli-$OS.tar.gz -C buildroot/bin/ php
