@@ -90,7 +90,7 @@ jobs:
             cp buildroot/build-libraries.json dist/
           fi
 
-      - if: inputs.without_deploy !== true
+      - if: inputs.without_deploy != true
         name: Deploy to Zhamao Server
         uses: easingthemes/ssh-deploy@main
         env:
