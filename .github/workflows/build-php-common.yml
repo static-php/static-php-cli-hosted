@@ -2,6 +2,14 @@ name: Build Self-Hosted PHP Binary (common)
 
 on:
   workflow_dispatch:
+    inputs:
+      add_extensions:
+        description: extensions to add (comma separated)
+        type: string
+        default: ''
+      without_deploy:
+        type: boolean
+        default: false
 
 jobs:
   build-release-artifacts:
@@ -82,7 +90,8 @@ jobs:
             cp buildroot/build-libraries.json dist/
           fi
 
-      - name: Deploy to Zhamao Server
+      - if: inputs.without_deploy !== true
+        name: Deploy to Zhamao Server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
