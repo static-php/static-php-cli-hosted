@@ -27,7 +27,7 @@ jobs:
           repo: crazywhalecc/static-php-cli
           branch: main
           workflow: release-build.yml
-          name: "spc-${{ env.OS }}"
+          name: "spc-linux-x86_64"
 
       - name: "Validate SPC bin"
         run: |
