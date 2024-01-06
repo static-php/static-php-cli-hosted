@@ -21,37 +21,34 @@ jobs:
         with:
           repository: crazywhalecc/static-php-cli
 
-      - name: "Setup PHP"
-        uses: shivammathur/setup-php@v2
+      - name: "Download SPC bin artifact for self-hosted runners"
+        uses: dawidd6/action-download-artifact@v2
         with:
-          php-version: '8.1'
-          extensions: curl, openssl, mbstring
-          ini-values: memory_limit=-1
-          tools: pecl, composer, php-cs-fixer
+          repo: crazywhalecc/static-php-cli
+          branch: main
+          workflow: release-build.yml
+          name: "spc-${{ env.OS }}"
 
-      # Cache composer dependencies
-      - id: cache-composer-deps
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: composer-dependencies
+      - name: "Validate SPC bin"
+        run: |
+          chmod +x spc
+          ./spc --version
 
-      # If there's no Composer cache, install dependencies
-      - if: steps.cache-composer-deps.outputs.cache-hit != 'true'
-        run: composer update --no-dev
 
       # If there's no dependencies cache, fetch sources, with or without debug
-      - run: |
+      - name: "Download all sources"
+        run: |
           ./bin/spc download --with-php=${{ matrix.php-version }} --all --debug
           ./bin/spc doctor --auto-fix
 
       # Upload downloaded files
-      - uses: actions/upload-artifact@v3
+      - name: "Upload action artifacts"
+        uses: actions/upload-artifact@v3
         with:
           name: download-files-${{ matrix.php-version }}
           path: downloads/
 
-      - name: Archive downloads
+      - name: "Archive downloads as zip"
         run: |
           cd downloads/
           zip -r download-files-${{ matrix.php-version }}.zip .
@@ -59,7 +56,8 @@ jobs:
           mv download-files-${{ matrix.php-version }}.zip ../downloads-archive/
           cd ..
 
-      - uses: easingthemes/ssh-deploy@main
+      - name: "Deploy to self-hosted server"
+        uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           ARGS: "-rltgoDzvO"
