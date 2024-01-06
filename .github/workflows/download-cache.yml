@@ -38,8 +38,8 @@ jobs:
       # If there's no dependencies cache, fetch sources, with or without debug
       - name: "Download all sources"
         run: |
-          ./bin/spc download --with-php=${{ matrix.php-version }} --all --debug
-          ./bin/spc doctor --auto-fix
+          ./spc download --with-php=${{ matrix.php-version }} --all --debug
+          ./spc doctor --auto-fix
 
       # Upload downloaded files
       - name: "Upload action artifacts"
