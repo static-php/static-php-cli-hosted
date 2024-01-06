@@ -45,9 +45,9 @@ jobs:
       - name: Download SPC bin artifact for self-hosted runners
         uses: dawidd6/action-download-artifact@v2
         with:
-          repo: static-php/static-php-cli-hosted
-          branch: master
-          workflow: build-spc-release.yml
+          repo: crazywhalecc/static-php-cli
+          branch: main
+          workflow: release-build.yml
           name: "spc-${{ env.OS }}"
 
       - name: Validate SPC bin
@@ -62,8 +62,7 @@ jobs:
           key: php-${{ matrix.php-version }}-dependencies-for-bulk-extensions
       
       # If there's no dependencies cache, fetch sources
-      - if: steps.cache-download.outputs.cache-hit != 'true'
-        name: "Download sources"
+      - name: "Download sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extensions }}
