@@ -10,16 +10,24 @@ env:
 
 jobs:
   download:
-    name: Archive downloads to zip
+    name: "Archive downloads to zip"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ "7.4", "8.0", "8.1", "8.2" ]
+        php-version: [ "7.4", "8.0", "8.1", "8.2", "8.3" ]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
         with:
           repository: crazywhalecc/static-php-cli
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl, openssl, mbstring
+          ini-values: memory_limit=-1
+          tools: pecl, composer, php-cs-fixer
 
       # Cache composer dependencies
       - id: cache-composer-deps
@@ -33,8 +41,7 @@ jobs:
         run: composer update --no-dev
 
       # If there's no dependencies cache, fetch sources, with or without debug
-      - if: steps.cache-download.outputs.cache-hit != 'true'
-        run: |
+      - run: |
           ./bin/spc download --with-php=${{ matrix.php-version }} --all --debug
           ./bin/spc doctor --auto-fix
 
