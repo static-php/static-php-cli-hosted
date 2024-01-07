@@ -16,7 +16,7 @@ all workflows are currently triggered manually.
 
 ## List of Actions
 
-- [Build spc binary files](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-spc-release.yml)
+- [Archive download sources weekly](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/download-cache.yml)
 - [Build PHP - common](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-common.yml)
 - [Build PHP - minimal](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-minimal.yml)
 - [Build PHP - bulk](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-bulk.yml)
