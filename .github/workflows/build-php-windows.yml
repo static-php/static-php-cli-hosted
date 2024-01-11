@@ -1,0 +1,92 @@
+name: Build Self-Hosted PHP Binary for Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-release-artifacts:
+    name: "Build ${{ matrix.php-version }} on ${{ matrix.operating-system }}"
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.0"
+          - "8.1"
+          - "8.2"
+          - "8.3"
+        operating-system:
+          - "windows-latest"
+        extensions:
+          - ctype,fileinfo,mbstring,tokenizer,phar
+    
+    steps:
+      - name: "OS type"
+        id: os-type
+        run: |
+          OS="windows-x86_64"
+          echo "OS=$OS" >> $GITHUB_ENV
+
+      - name: "Checkout static-php-cli"
+        uses: actions/checkout@v4
+        with:
+          repository: crazywhalecc/static-php-cli
+          ref: main
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          tools: pecl, composer
+          extensions: curl, openssl, mbstring
+          ini-values: memory_limit=-1
+
+      - name: "Cache Composer packages"
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      # Cache downloaded source
+      - id: cache-download
+        uses: actions/cache@v3
+        with:
+          path: downloads
+          key: php-${{ matrix.php }}-dependencies
+
+      - name: "Validate SPC powershell script"
+        run: bin/spc --version
+
+      - name: "Install Dependencies"
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: "Run Build Tests (doctor)"
+        run: bin/spc doctor --auto-fix
+
+      # If there's no dependencies cache, fetch sources
+      - name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
+        run: bin/spc download --with-php=${{ matrix.php-version }} --for-extensions="${{ matrix.extensions }}"
+
+      - name: "Build extensions: ${{ matrix.extensions }}"
+        run: |
+          bin/spc doctor --auto-fix
+          bin/spc build --build-cli --build-micro "${{ matrix.extensions }}" --debug
+
+          $PHPVER = bin/spc dev:php-ver
+          New-Item -ItemType Directory -Force -Path dist
+          Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
+          Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
+
+      - name: "Upload Artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: php-${{ matrix.php-version }}-windows
+          path: |
+            buildroot/bin/php.exe
+            buildroot/bin/micro.sfx
+          if-no-files-found: error
