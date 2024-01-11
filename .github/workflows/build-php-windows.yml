@@ -24,8 +24,8 @@ jobs:
       - name: "OS type"
         id: os-type
         run: |
-          OS="windows-x86_64"
-          echo "OS=$OS" >> $GITHUB_ENV
+          $OS = "windows-x86_64"
+          Add-Content -Path $env:GITHUB_ENV -Value "OS=$OS"
 
       - name: "Checkout static-php-cli"
         uses: actions/checkout@v4
