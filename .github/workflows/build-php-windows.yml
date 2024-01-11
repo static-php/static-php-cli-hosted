@@ -55,13 +55,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: downloads
-          key: php-${{ matrix.php }}-dependencies
-
-      - name: "Validate SPC powershell script"
-        run: bin/spc --version
+          key: php-${{ matrix.php-version }}-dependencies
 
       - name: "Install Dependencies"
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: "Validate SPC powershell script"
+        run: bin/spc --version
 
       - name: "Run Build Tests (doctor)"
         run: bin/spc doctor --auto-fix
