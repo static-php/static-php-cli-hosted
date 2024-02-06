@@ -19,7 +19,7 @@ jobs:
           - "ubuntu-latest"
           - "macos-latest"
           - "debian-arm64-self-hosted"
-          - "macos-arm64-self-hosted"
+          - "macos-14"
         extensions:
           - pcntl,posix,mbstring,tokenizer,phar
     
@@ -37,7 +37,7 @@ jobs:
               OS="macos-x86_64"
           elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
               OS="linux-aarch64"
-          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
+          elif [ "${{ matrix.operating-system }}" = "macos-14" ]; then
               OS="macos-aarch64"
           fi
           echo "OS=$OS" >> $GITHUB_ENV
