@@ -19,7 +19,7 @@ jobs:
           - "ubuntu-latest"
           - "macos-latest"
           - "debian-arm64-self-hosted"
-          - "macos-arm64-self-hosted"
+          - "macos-14"
         extensions:
           - apcu,bcmath,bz2,calendar,ctype,curl,dba,dom,event,exif,fileinfo,filter,ftp,gd,gmp,iconv,imagick,imap,intl,mbregex,mbstring,mysqli,mysqlnd,opcache,openssl,pcntl,pdo,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,phar,posix,protobuf,readline,redis,session,shmop,simplexml,soap,sockets,sodium,sqlite3,swoole,sysvmsg,sysvsem,sysvshm,tokenizer,xml,xmlreader,xmlwriter,xsl,zip,zlib
     
@@ -37,7 +37,7 @@ jobs:
               OS="macos-x86_64"
           elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
               OS="linux-aarch64"
-          elif [ "${{ matrix.operating-system }}" = "macos-arm64-self-hosted" ]; then
+          elif [ "${{ matrix.operating-system }}" = "macos-14" ]; then
               OS="macos-aarch64"
           fi
           echo "OS=$OS" >> $GITHUB_ENV
