@@ -1,4 +1,4 @@
-name: Build Self-Hosted PHP Binary for Windows
+name: Build Self-Hosted PHP Binary (Windows, spc-min)
 
 on:
   workflow_dispatch:
@@ -90,3 +90,14 @@ jobs:
             buildroot/bin/php.exe
             buildroot/bin/micro.sfx
           if-no-files-found: error
+          
+      - name: Deploy to Zhamao Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          ARGS: "-rltgoDzvO"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+          REMOTE_PORT: ${{ secrets.DEPLOY_SERVER_PORT }}
+          REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
