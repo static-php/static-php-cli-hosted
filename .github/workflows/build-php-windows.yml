@@ -101,4 +101,6 @@ jobs:
           $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($username, "Read,Write", "Allow")
           $acl.AddAccessRule($rule)
           Set-Acl -Path $filePath -AclObject $acl
-          scp -r -P ${{ secrets.DEPLOY_SERVER_PORT }} -i $filePath "dist\" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
+          $PHPVER = bin/spc dev:php-ver
+          scp -P ${{ secrets.DEPLOY_SERVER_PORT }} -i $filePath "dist\php-$PHPVER-cli-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
+          scp -P ${{ secrets.DEPLOY_SERVER_PORT }} -i $filePath "dist\php-$PHPVER-micro-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
