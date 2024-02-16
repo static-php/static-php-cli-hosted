@@ -72,6 +72,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: bin/spc download --with-php=${{ matrix.php-version }} --for-extensions="${{ matrix.extensions }}"
 
+      - name: "Prepare private key"
+        run: |
+          $filePath = "privkey.txt"
+          Set-Content -Path $filePath -Value "${{ secrets.DEPLOY_SERVER_SECRET_KEY }}"
+
+      - name: "Prepare private key permission"
+        run: |
+          $username = whoami
+          $acl = New-Object System.Security.AccessControl.FileSecurity
+          $acl.SetAccessRuleProtection($true, $false)
+          $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($username, "Read,Write", "Allow")
+          $acl.AddAccessRule($rule)
+          Set-Acl -Path $filePath -AclObject $acl
+
       - name: "Build extensions: ${{ matrix.extensions }}"
         run: |
           bin/spc doctor --auto-fix
@@ -82,6 +96,8 @@ jobs:
           Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
           Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
 
+          scp -i $filePath "dist\php-$PHPVER-cli-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
+          scp -i $filePath "dist\php-$PHPVER-micro-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
         with:
