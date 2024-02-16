@@ -97,34 +97,15 @@ jobs:
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
       - name: "Deploy to Zhamao Server"
-        uses: betanzos/scp-upload@v1
+        uses: Creepios/sftp-action@v1.0.5
         with:
-          # Source local file path
-          # REQUIRED
-          source: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-      
-          # Remote host
-          # REQUIRED
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
-      
-          # Remote host SSH port
           port: ${{ secrets.DEPLOY_SERVER_PORT }}
-      
-          # Remote host username
-          # REQUIRED
           username: ${{ secrets.DEPLOY_SERVER_USER }}
-      
-          # SSH private key
-          # REQUIRED  
-          key: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
-      
-          # Remote directory to copy the file. Default $HOME
-          # REQUIRED  
-          remote_dir: ${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}
-      
-          # Recursively copy entire source directories. Valid values: true and false (specified as strings)
-          recursive: 'false'
-
+          privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          localPath: "dist/php-${{ env.PHPVER }}-cli-win.zip"
+          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}
+          
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
         with:
