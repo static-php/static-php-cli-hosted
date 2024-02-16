@@ -92,12 +92,13 @@ jobs:
           if-no-files-found: error
           
       - name: Deploy to Zhamao Server
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
-          ARGS: "-rltgoDzvO"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
-          REMOTE_PORT: ${{ secrets.DEPLOY_SERVER_PORT }}
-          REMOTE_USER: ${{ secrets.DEPLOY_SERVER_USER }}
-          TARGET: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
+        run: |
+          $filePath = ".\privkey.txt"
+          Set-Content -Path $filePath -Value "${{ secrets.DEPLOY_SERVER_SECRET_KEY }}"
+          $username = whoami
+          $acl = New-Object System.Security.AccessControl.FileSecurity
+          $acl.SetAccessRuleProtection($true, $false)
+          $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($username, "Read,Write", "Allow")
+          $acl.AddAccessRule($rule)
+          Set-Acl -Path $filePath -AclObject $acl
+          scp -R -P ${{ secrets.DEPLOY_SERVER_PORT }} -i $filePath "dist\" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
