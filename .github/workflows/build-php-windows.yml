@@ -94,9 +94,37 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist
           Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
           Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
+          echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
-          scp -i "privkey.txt" "dist\php-$PHPVER-cli-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
-          scp -i "privkey.txt" "dist\php-$PHPVER-micro-win.zip" ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }}:${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}
+      - name: "Deploy to Zhamao Server"
+        uses: betanzos/scp-upload@v1
+        with:
+          # Source local file path
+          # REQUIRED
+          source: "dist/php-${{ env.PHPVER }}-cli-win.zip"
+      
+          # Remote host
+          # REQUIRED
+          host: ${{ secrets.DEPLOY_SERVER_HOST }}
+      
+          # Remote host SSH port
+          port: ${{ secrets.DEPLOY_SERVER_PORT }}
+      
+          # Remote host username
+          # REQUIRED
+          username: ${{ secrets.DEPLOY_SERVER_USER }}
+      
+          # SSH private key
+          # REQUIRED  
+          key: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+      
+          # Remote directory to copy the file. Default $HOME
+          # REQUIRED  
+          remote_dir: ${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}
+      
+          # Recursively copy entire source directories. Valid values: true and false (specified as strings)
+          recursive: 'false'
+
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
         with:
