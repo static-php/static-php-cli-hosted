@@ -72,19 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: bin/spc download --with-php=${{ matrix.php-version }} --for-extensions="${{ matrix.extensions }}"
 
-      - name: "Prepare private key"
-        run: |
-          Set-Content -Path "privkey.txt" -Value "${{ secrets.DEPLOY_SERVER_SECRET_KEY }}"
-
-      - name: "Prepare private key permission"
-        run: |
-          $username = whoami
-          $acl = New-Object System.Security.AccessControl.FileSecurity
-          $acl.SetAccessRuleProtection($true, $false)
-          $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($username, "Read,Write", "Allow")
-          $acl.AddAccessRule($rule)
-          Set-Acl -Path "privkey.txt" -AclObject $acl
-
       - name: "Build extensions: ${{ matrix.extensions }}"
         run: |
           bin/spc doctor --auto-fix
@@ -96,7 +83,7 @@ jobs:
           Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
-      - name: "Deploy to Zhamao Server"
+      - name: "Deploy cli to Zhamao Server"
         uses: Creepios/sftp-action@v1.0.5
         with:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
@@ -104,6 +91,16 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           localPath: "dist/php-${{ env.PHPVER }}-cli-win.zip"
+          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}/
+          
+      - name: "Deploy micro to Zhamao Server"
+        uses: Creepios/sftp-action@v1.0.5
+        with:
+          host: ${{ secrets.DEPLOY_SERVER_HOST }}
+          port: ${{ secrets.DEPLOY_SERVER_PORT }}
+          username: ${{ secrets.DEPLOY_SERVER_USER }}
+          privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          localPath: "dist/php-${{ env.PHPVER }}-micro-win.zip"
           remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}/
           
       - name: "Upload Artifact"
