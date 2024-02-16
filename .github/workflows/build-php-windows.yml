@@ -104,7 +104,7 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           localPath: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}
+          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}/
           
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
