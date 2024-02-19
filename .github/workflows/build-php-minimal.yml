@@ -72,10 +72,12 @@ jobs:
           SPC_USE_SUDO=yes ./spc doctor --auto-fix
           if [ "${{ env.OS }}" = "linux-x86_64" ]; then
             ./spc install-pkg upx
+            UPX=--with-upx-pack
           elif [ "${{ env.OS }}" = "linux-aarch64" ]; then
             ./spc install-pkg upx
+            UPX=--with-upx-pack
           fi
-          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }} --debug --with-upx-pack
+          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extensions }} --debug $UPX
           PHPVER=$(cat source/php-src/main/php_version.h | grep "PHP_VERSION " | awk -F\" '{print $2}')
           mkdir dist/
           tar -czf dist/php-$PHPVER-cli-$OS.tar.gz -C buildroot/bin/ php
