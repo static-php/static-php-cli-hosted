@@ -75,7 +75,8 @@ jobs:
       - name: "Build extensions: ${{ matrix.extensions }}"
         run: |
           bin/spc doctor --auto-fix
-          bin/spc build --build-cli --build-micro "${{ matrix.extensions }}" --debug
+          bin/spc install-pkg upx
+          bin/spc build --build-cli --build-micro "${{ matrix.extensions }}" --debug --with-upx-pack
 
           $PHPVER = bin/spc dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
