@@ -5,13 +5,13 @@ Self-Hosted [static-php-cli](https://github.com/crazywhalecc/static-php-cli) bui
 
 This repository is used to automatically compile static-php-cli related content for different architectures and operating systems.
 
-Because GitHub's official runners (free) do not support the ARM architecture, 
+Because GitHub's official runners (free) do not support the ARM architecture for Linux, 
 they are required to release production-ready binaries such as spc, 
 php-cli containing common extensions, etc. 
 So the repository is a mix of GitHub Actions' official runner and my local runner to build 
 different architecture and OS versions of the same content at the same time.
 
-Because it relies on my local ARM device for build, and the local environment is not a stable cloud server, 
+Because it relies on my local ARM linux vm for build, and the local environment is not a stable cloud server, 
 all workflows are currently triggered manually.
 
 ## List of Actions
