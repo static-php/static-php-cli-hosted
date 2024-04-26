@@ -17,7 +17,7 @@ jobs:
           - "8.3"
         operating-system:
           - "ubuntu-latest"
-          - "macos-latest"
+          - "macos-13"
           - "debian-arm64-self-hosted"
           - "macos-14"
         extensions:
@@ -33,7 +33,7 @@ jobs:
           OS=""
           if [ "${{ matrix.operating-system }}" = "ubuntu-latest" ]; then
               OS="linux-x86_64"
-          elif [ "${{ matrix.operating-system }}" = "macos-latest" ]; then
+          elif [ "${{ matrix.operating-system }}" = "macos-13" ]; then
               OS="macos-x86_64"
           elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
               OS="linux-aarch64"
