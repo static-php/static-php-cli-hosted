@@ -11,11 +11,50 @@ jobs:
       fail-fast: false
       matrix:
         extension:
+          - apcu
           - bcmath
+          - bz2
+          - calendar
+          - ctype
+          - curl
+          - dba
+          - dom
+          - ds
+          - event
+          - exif
+          - filter
+          - fileinfo
+          - ftp
+          - gd
+          - gettext
+          - gmp
+          - iconv
+          - igbinary
+          - imagick
+          - imap
+          - intl
+          - ldap
+          - mbstring,mbregex
+          - opcache
+          - openssl
           - pcntl
-          - xml
-          - amqp
+          - password-argon2
+          - pgsql
+          - phar
+          - posix
+          - rar
+          - protobuf
           - readline
+          - redis
+          - simdjson
+          - sodium
+          - sqlsrv
+          - ssh2
+          - swoole
+          - uv
+          - yaml
+          - zip
+          - zstd
         php-version:
           - "8.3"
         operating-system:
