@@ -37,25 +37,45 @@ jobs:
           - intl
           - ldap
           - mbstring,mbregex
+          - memcache
+          - mysqli,mysqlnd,pdo_mysql
           - opcache
           - openssl
           - pcntl
           - password-argon2
-          - pgsql
+          - pcntl
+          - pdo
+          - pgsql,pdo_pgsql
           - phar
           - posix
           - rar
           - protobuf
           - readline
           - redis
+          - session
+          - shmop
           - simdjson
+          - simplexml,xml
+          - snappy
+          - soap
+          - sockets
           - sodium
+          - sqlite3,pdo_sqlite
           - sqlsrv
           - ssh2
           - swoole
+          - swow
+          - sysvmsg,sysvsem,sysvshm
+          - tidy
+          - tokenizer
           - uv
+          - xhprof
+          - xmlwriter,xmlreader
+          - xsl
+          - yac
           - yaml
           - zip
+          - zlib
           - zstd
         php-version:
           - "8.3"
