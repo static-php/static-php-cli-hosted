@@ -2,6 +2,8 @@ name: Extension matrix tests
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 5"
 
 jobs:
   test:
