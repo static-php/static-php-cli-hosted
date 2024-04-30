@@ -1,0 +1,81 @@
+name: Extension matrix tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: "Test ${{ matrix.extension }} with PHP ${{ matrix.php-version }} on ${{ matrix.operating-system }}"
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        extension:
+          - bcmath
+          - pcntl
+          - xml
+          - amqp
+          - readline
+        php-version:
+          - "8.3"
+        operating-system:
+          - "ubuntu-latest"
+          #- "macos-13"
+          #- "debian-arm64-self-hosted"
+          - "macos-14"
+    
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: OS type
+        id: os-type
+        run: |
+          OS=""
+          if [ "${{ matrix.operating-system }}" = "ubuntu-latest" ]; then
+              OS="linux-x86_64"
+          elif [ "${{ matrix.operating-system }}" = "macos-13" ]; then
+              OS="macos-x86_64"
+          elif [ "${{ matrix.operating-system }}" = "debian-arm64-self-hosted" ]; then
+              OS="linux-aarch64"
+          elif [ "${{ matrix.operating-system }}" = "macos-14" ]; then
+              OS="macos-aarch64"
+          fi
+          echo "OS=$OS" >> $GITHUB_ENV
+
+      - name: Download SPC bin artifact for self-hosted runners
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          repo: crazywhalecc/static-php-cli
+          branch: main
+          workflow: release-build.yml
+          name: "spc-${{ env.OS }}"
+
+      - name: Validate SPC bin
+        run: |
+          chmod +x spc
+          ./spc --version
+
+      - id: cache-download
+        uses: actions/cache@v3
+        with:
+          path: downloads
+          key: php-${{ matrix.php-version }}-dependencies-for-tests
+      
+      # If there's no dependencies cache, fetch sources
+      - name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
+        run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extension }}
+
+      - name: "Build library: ${{ matrix.library }}"
+        run: |
+          SPC_USE_SUDO=yes ./spc doctor --auto-fix
+          if [ "${{ env.OS }}" = "linux-x86_64" ]; then
+            ./spc install-pkg upx
+            UPX=--with-upx-pack
+          elif [ "${{ env.OS }}" = "linux-aarch64" ]; then
+            ./spc install-pkg upx
+            UPX=--with-upx-pack
+          fi
+          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extension }} --debug $UPX
