@@ -140,4 +140,4 @@ jobs:
             ./spc install-pkg upx
             UPX=--with-upx-pack
           fi
-          ./spc build --build-cli --build-micro --build-fpm ${{ matrix.extension }} --debug $UPX --with-suggested-libs --with-suggested-exts
+          ./spc build --build-cli --build-fpm ${{ matrix.extension }} --debug $UPX --with-suggested-libs --with-suggested-exts
