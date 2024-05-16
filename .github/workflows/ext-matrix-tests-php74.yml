@@ -2,9 +2,6 @@ name: "Extension matrix tests PHP 7.4"
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
   schedule:
     - cron: "0 2 * * 5"
 
