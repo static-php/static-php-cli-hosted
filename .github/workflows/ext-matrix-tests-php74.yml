@@ -41,7 +41,6 @@ jobs:
           - mysqli,mysqlnd,pdo_mysql
           #- opcache
           - openssl
-          - pcntl
           - password-argon2
           - pcntl
           - pdo
