@@ -1,4 +1,4 @@
-name: Extension matrix tests (PHP 7.4)
+name: "Extension matrix tests PHP 7.4"
 
 on:
   workflow_dispatch:
