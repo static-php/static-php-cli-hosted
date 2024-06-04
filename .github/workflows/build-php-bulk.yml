@@ -65,7 +65,7 @@ jobs:
       - name: "Download sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extensions }}
+        run: ./spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extensions }} --retry=3
 
       - name: "Build library: ${{ matrix.library }}"
         run: |
