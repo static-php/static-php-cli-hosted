@@ -48,7 +48,7 @@ jobs:
           - phar
           - posix
           - rar
-          - protobuf
+          #- protobuf
           - readline
           - redis
           - session
@@ -68,7 +68,7 @@ jobs:
           - sysvmsg,sysvsem,sysvshm
           - tidy
           - tokenizer
-          - uv
+          #- uv
           - xhprof
           - xmlwriter,xmlreader
           - xsl
