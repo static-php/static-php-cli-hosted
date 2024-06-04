@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         extension:
+          - amqp
           - apcu
           - bcmath
           - bz2
@@ -69,8 +70,10 @@ jobs:
           - sysvmsg,sysvsem,sysvshm
           - tidy
           - tokenizer
+          - uuid
           - uv
           - xhprof
+          - xlswriter
           - xmlwriter,xmlreader
           - xsl
           - yac
