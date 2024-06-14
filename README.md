@@ -21,4 +21,5 @@ all workflows are currently triggered manually.
 - [Build PHP - minimal](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-minimal.yml)
 - [Build PHP - bulk](https://github.com/crazywhalecc/static-php-cli-hosted/blob/master/.github/workflows/build-php-bulk.yml)
 - [Build PHP (Windows) - spc-min](https://github.com/static-php/static-php-cli-hosted/blob/master/.github/workflows/build-php-windows.yml)
-- [Extension matrix tests](https://github.com/static-php/static-php-cli-hosted/blob/master/.github/workflows/ext-matrix-tests.yml)
+- [Extension matrix tests (7.4)](https://github.com/static-php/static-php-cli-hosted/blob/master/.github/workflows/ext-matrix-tests-php74.yml)
+- [Extension matrix tests (8.3)](https://github.com/static-php/static-php-cli-hosted/blob/master/.github/workflows/ext-matrix-tests-php83.yml)
