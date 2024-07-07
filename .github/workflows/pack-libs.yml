@@ -47,7 +47,7 @@ jobs:
             ubuntu-latest)
               echo "OS=linux" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
-              echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
+              echo "CMD=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-20.04)
               echo "OS=linux" >> "$GITHUB_OUTPUT"
