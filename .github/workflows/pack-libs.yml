@@ -134,6 +134,7 @@ jobs:
 
       - name: "Update latest release of hosted repo"
         if: github.repository == 'static-php/static-php-cli-hosted' && github.event_name == 'workflow_dispatch'
+        shell: bash
         run: |
           ref="$(gh release view --repo static-php/static-php-cli-hosted --json tagName --jq '.tagName')"
           gh release upload "$ref" "dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.txz" --repo static-php/static-php-cli-hosted --clobber
