@@ -34,9 +34,12 @@ jobs:
           - pkg-config
           - bzip2
           - gmp
+          - sqlite
+          - liblz4
         exclude:
           - { runner: "windows-latest", lib: "pkg-config" }
           - { runner: "windows-latest", lib: "gmp" }
+          - { runner: "windows-latest", lib: "liblz4" }
       fail-fast: false
     steps:
       - name: "Process env string"
