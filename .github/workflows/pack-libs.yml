@@ -79,6 +79,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: crazywhalecc/static-php-cli
+          ref: pre-built-libs
 
       - name: "Setup PHP"
         if: matrix.runner != 'ubuntu-20.04'
