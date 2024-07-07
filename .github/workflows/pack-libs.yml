@@ -13,9 +13,6 @@ on:
       - '.github/workflows/test-pack-lib.yml'
       - 'bin/**'
 
-permissions:
-  contents: read
-
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
