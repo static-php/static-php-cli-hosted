@@ -27,7 +27,7 @@ jobs:
           - ubuntu-latest
           - ubuntu-20.04
           - macos-13
-          - windows-latest
+          - windows-2019
           - macos-14
         lib:
           - zlib
@@ -37,9 +37,9 @@ jobs:
           - sqlite
           - liblz4
         exclude:
-          - { runner: "windows-latest", lib: "pkg-config" }
-          - { runner: "windows-latest", lib: "gmp" }
-          - { runner: "windows-latest", lib: "liblz4" }
+          - { runner: "windows-2019", lib: "pkg-config" }
+          - { runner: "windows-2019", lib: "gmp" }
+          - { runner: "windows-2019", lib: "liblz4" }
       fail-fast: false
     steps:
       - name: "Process env string"
@@ -57,7 +57,7 @@ jobs:
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo CMD="SPC_USE_ARCH=aarch64 bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
-            windows-latest)
+            windows-2019)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
@@ -115,12 +115,12 @@ jobs:
       - run: ${{ steps.process-env.outputs.CMD }} download --for-libs="${{ matrix.lib }}" --debug --retry=5 --shallow-clone
 
       - name: "Download pre-built pkg-config for ${{ matrix.runner }}"
-        if: matrix.runner != 'windows-latest' && matrix.lib != 'pkg-config'
+        if: matrix.runner != 'windows-2019' && matrix.lib != 'pkg-config'
         run: |
           ${{ steps.process-env.outputs.CMD }} download --for-libs="pkg-config" --debug --retry=5 --shallow-clone --prefer-pre-built
           ${{ steps.process-env.outputs.CMD }} build:libs pkg-config --debug
 
-      - if: matrix.runner != 'windows-latest' || matrix.lib != 'pkg-config'
+      - if: matrix.runner != 'windows-2019' || matrix.lib != 'pkg-config'
         run: ${{ steps.process-env.outputs.CMD }} dev:pack-lib --debug ${{ matrix.lib }}
 
       - name: "Upload packed lib (${{ matrix.lib }} for ${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }})"
