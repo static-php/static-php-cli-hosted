@@ -42,6 +42,7 @@ jobs:
           - libiconv
           - libavif
           - libpng
+          - libtiff
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -49,7 +50,7 @@ jobs:
           - { runner: "windows-2019", lib: "brotli" }
           - { runner: "windows-2019", lib: "libargon2" }
           - { runner: "windows-2019", lib: "libiconv" }
-
+          - { runner: "windows-2019", lib: "libtiff" }
       fail-fast: false
     steps:
       - name: "Process env string"
