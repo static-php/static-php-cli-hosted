@@ -36,6 +36,7 @@ jobs:
           - gmp
           - sqlite
           - liblz4
+          - openssl
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
