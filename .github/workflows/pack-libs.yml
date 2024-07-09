@@ -18,7 +18,7 @@ env:
 
 jobs:
   build:
-    name: "Pack Lib Test (${{ matrix.lib }} for ${{ matrix.runner }})"
+    name: "Pack Pre-built Lib (${{ matrix.lib }} for ${{ matrix.runner }})"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     strategy:
@@ -50,6 +50,7 @@ jobs:
           - libwebp
           - libyaml
           - ncurses
+          - onig
           - readline
           - unixodbc
           - xz
