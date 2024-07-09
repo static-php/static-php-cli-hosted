@@ -5,8 +5,8 @@ on:
 
 jobs:
   build-release-artifacts:
-    name: "Build ${{ matrix.php-version }} on ${{ matrix.operating-system }}"
-    runs-on: ${{ matrix.operating-system }}
+    name: "Build ${{ matrix.php-version }}-${{ matrix.combination }} on ${{ matrix.runner }}"
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
@@ -15,23 +15,37 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
-        operating-system:
+        runner:
           - "windows-latest"
-        extensions:
-          - ctype,fileinfo,mbstring,tokenizer,phar
+        combination:
+          - spc-min
     
     steps:
-      - name: "OS type"
-        id: os-type
+      - name: "Process env string"
+        id: process-env
+        shell: bash
         run: |
-          $OS = "windows-x86_64"
-          Add-Content -Path $env:GITHUB_ENV -Value "OS=$OS"
-
-      - name: "Checkout static-php-cli"
+          case "${{ matrix.combination }}" in
+            spc-min)
+              echo "EXTENSIONS=ctype,fileinfo,mbstring,tokenizer,phar" >> "$GITHUB_OUTPUT"
+              echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+          
+          case "${{ matrix.runner }}" in
+            windows-latest)
+              echo "OS=windows" >> "$GITHUB_OUTPUT"
+              echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
+              echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+            
+      - name: "Checkout remote"
+        if: github.repository != 'crazywhalecc/static-php-cli'
         uses: actions/checkout@v4
         with:
           repository: crazywhalecc/static-php-cli
-          ref: main
+          ref: pre-built-libs
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -41,44 +55,45 @@ jobs:
           extensions: curl, openssl, mbstring
           ini-values: memory_limit=-1
 
-      - name: "Cache Composer packages"
+      - name: "Cache composer packages"
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-php
 
       # Cache downloaded source
       - id: cache-download
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: downloads
-          key: php-${{ matrix.php-version }}-dependencies
+          key: pack-lib-dependencies-${{ matrix.combination }}-${{ matrix.php-version }}-${{ matrix.runner }}
 
       - name: "Install Dependencies"
-        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
 
       - name: "Validate SPC powershell script"
-        run: bin/spc --version
+        run: ${{ steps.process-env.outputs.CMD }} --version
 
       - name: "Run Build Tests (doctor)"
-        run: bin/spc doctor --auto-fix
+        run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
 
       # If there's no dependencies cache, fetch sources
       - name: "Download sources"
-        env:
+        env: 
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: bin/spc download --with-php=${{ matrix.php-version }} --for-extensions="${{ matrix.extensions }}"
+        run: ${{ steps.process-env.outputs.CMD }} download --with-php=${{ matrix.php-version }} --for-extensions="${{ steps.process-env.outputs.EXTENSIONS }}" --retry=5 --prefer-pre-built
 
-      - name: "Build extensions: ${{ matrix.extensions }}"
+      - name: "Build extensions: ${{ steps.process-env.outputs.EXTENSIONS }}"
         run: |
-          bin/spc doctor --auto-fix
-          bin/spc install-pkg upx
-          bin/spc build --build-cli --build-micro "${{ matrix.extensions }}" --debug --with-upx-pack
+          ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
+          ${{ steps.process-env.outputs.CMD }} install-pkg upx
+          
+          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ matrix.extensions }}" --debug --with-upx-pack
 
-          $PHPVER = bin/spc dev:php-ver
+          $PHPVER = ${{ steps.process-env.outputs.CMD }} dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
           Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
           Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
@@ -92,7 +107,7 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           localPath: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}/
+          remotePath: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
           
       - name: "Deploy micro to Zhamao Server"
         uses: Creepios/sftp-action@v1.0.5
@@ -102,10 +117,10 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           localPath: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remotePath: ${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}/
+          remotePath: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
           
       - name: "Upload Artifact"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: php-${{ matrix.php-version }}-windows
           path: |
