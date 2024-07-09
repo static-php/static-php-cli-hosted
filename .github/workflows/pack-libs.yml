@@ -43,6 +43,8 @@ jobs:
           - libavif
           - libpng
           - libtiff
+          - icu
+          - libcares
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -51,6 +53,8 @@ jobs:
           - { runner: "windows-2019", lib: "libargon2" }
           - { runner: "windows-2019", lib: "libiconv" }
           - { runner: "windows-2019", lib: "libtiff" }
+          - { runner: "windows-2019", lib: "icu" }
+          - { runner: "windows-2019", lib: "libcares" }
       fail-fast: false
     steps:
       - name: "Process env string"
