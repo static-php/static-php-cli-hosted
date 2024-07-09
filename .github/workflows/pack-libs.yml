@@ -45,6 +45,16 @@ jobs:
           - libtiff
           - icu
           - libcares
+          - libevent
+          - libsodium
+          - libwebp
+          - libyaml
+          - ncurses
+          - readline
+          - unixodbc
+          - xz
+        include:
+          - { runner: "windows-2019", lib: "libiconv-win" }
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -55,6 +65,11 @@ jobs:
           - { runner: "windows-2019", lib: "libtiff" }
           - { runner: "windows-2019", lib: "icu" }
           - { runner: "windows-2019", lib: "libcares" }
+          - { runner: "windows-2019", lib: "libevent" }
+          - { runner: "windows-2019", lib: "libsodium" }
+          - { runner: "windows-2019", lib: "ncurses" }
+          - { runner: "windows-2019", lib: "readline" }
+          - { runner: "windows-2019", lib: "unixodbc" }
       fail-fast: false
     steps:
       - name: "Process env string"
