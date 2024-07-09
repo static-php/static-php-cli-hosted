@@ -29,7 +29,7 @@ jobs:
         id: process-env
         shell: bash
         run: |
-          case "${{ martix.combination }}" in
+          case "${{ matrix.combination }}" in
             minimal) 
               echo "EXTENSIONS=pcntl,posix,mbstring,tokenizer,phar" >> "$GITHUB_OUTPUT"
               echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}" >> "$GITHUB_OUTPUT"
