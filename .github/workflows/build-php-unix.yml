@@ -156,7 +156,7 @@ jobs:
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: php-${{ matrix.php-version }}-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}
+          name: php-${{ matrix.php-version }}-${{ matrix.combination }}-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}
           path: |
             buildroot/bin/php
             buildroot/bin/php-fpm
