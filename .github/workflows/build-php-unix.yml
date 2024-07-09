@@ -126,7 +126,11 @@ jobs:
           ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro --build-fpm ${{ steps.process-env.outputs.EXTENSIONS }} --debug $UPX
 
           PHPVER=$(cat source/php-src/main/php_version.h | grep "PHP_VERSION " | awk -F\" '{print $2}')
-          mkdir dist/
+          
+          if [ ! -d "dist" ]; then
+            mkdir dist/
+          fi
+          
           tar -czf dist/php-$PHPVER-cli-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ php
           tar -czf dist/php-$PHPVER-micro-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ micro.sfx
           tar -czf dist/php-$PHPVER-fpm-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ php-fpm
