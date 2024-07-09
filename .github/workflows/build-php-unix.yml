@@ -130,10 +130,12 @@ jobs:
           if [ ! -d "dist" ]; then
             mkdir dist/
           fi
+
+          sudo chmod -R 777 dist
           
-          tar -czf dist/php-$PHPVER-cli-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ php
-          tar -czf dist/php-$PHPVER-micro-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ micro.sfx
-          tar -czf dist/php-$PHPVER-fpm-${{ steps.process-env.outputs.OS }}.tar.gz -C buildroot/bin/ php-fpm
+          tar -czf dist/php-$PHPVER-cli-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C buildroot/bin/ php
+          tar -czf dist/php-$PHPVER-micro-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C buildroot/bin/ micro.sfx
+          tar -czf dist/php-$PHPVER-fpm-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C buildroot/bin/ php-fpm
           if [ "${{ matrix.php-version }}" == "8.3" ] && [ "${{ matrix.runner }}" == "ubuntu-latest" ]; then
             cp -r buildroot/license dist/
             cp buildroot/build-extensions.json dist/
@@ -154,7 +156,7 @@ jobs:
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: php-${{ matrix.php-version }}-${{ steps.process-env.outputs.OS }}
+          name: php-${{ matrix.php-version }}-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}
           path: |
             buildroot/bin/php
             buildroot/bin/php-fpm
