@@ -54,8 +54,6 @@ jobs:
           - readline
           - unixodbc
           - xz
-        include:
-          - { runner: "windows-2019", lib: "libiconv-win" }
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
