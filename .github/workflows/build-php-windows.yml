@@ -19,6 +19,7 @@ jobs:
           - "windows-latest"
         combination:
           - spc-min
+          - spc-max
     
     steps:
       - name: "Process env string"
@@ -27,7 +28,11 @@ jobs:
           switch ("${{ matrix.combination }}") {
             "spc-min" {
                 Add-Content -Path $env:GITHUB_OUTPUT -Value "EXTENSIONS=ctype,fileinfo,mbstring,tokenizer,phar"
-                Add-Content -Path $env:GITHUB_OUTPUT -Value "DEPLOY_TARGET=$($env:secrets_DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN)"
+                Add-Content -Path $env:GITHUB_OUTPUT -Value "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}"
+            }
+            "spc-max" {
+                Add-Content -Path $env:GITHUB_OUTPUT -Value "EXTENSIONS=amqp,apcu,bcmath,bz2,calendar,ctype,curl,dba,dom,ds,exif,ffi,fileinfo,filter,ftp,gd,iconv,libxml,mbregex,mbstring,mysqli,mysqlnd,opcache,openssl,pdo,pdo_mysql,pdo_sqlite,pdo_sqlsrv,phar,rar,session,shmop,simdjson,simplexml,soap,sockets,sqlite3,sqlsrv,ssh2,swow,sysvshm,tokenizer,xml,xmlreader,xmlwriter,yac,yaml,zip,zlib"
+                Add-Content -Path $env:GITHUB_OUTPUT -Value "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MAX }}"
             }
           }  
         
