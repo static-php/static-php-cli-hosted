@@ -1,4 +1,4 @@
-name: Build Self-Hosted PHP Binary (Windows, spc-min)
+name: Build Self-Hosted PHP Binary (Windows)
 
 on:
   workflow_dispatch:
