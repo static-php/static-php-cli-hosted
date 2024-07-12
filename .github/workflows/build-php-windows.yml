@@ -23,22 +23,21 @@ jobs:
     steps:
       - name: "Process env string"
         id: process-env
-        shell: bash
         run: |
-          case "${{ matrix.combination }}" in
-            spc-min)
-              echo "EXTENSIONS=ctype,fileinfo,mbstring,tokenizer,phar" >> "$GITHUB_OUTPUT"
-              echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN }}" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
-          
-          case "${{ matrix.runner }}" in
-            windows-latest)
-              echo "OS=windows" >> "$GITHUB_OUTPUT"
-              echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
-              echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
+          switch ("${{ matrix.combination }}") {
+            "spc-min" {
+                Add-Content -Path $env:GITHUB_OUTPUT -Value "EXTENSIONS=ctype,fileinfo,mbstring,tokenizer,phar"
+                Add-Content -Path $env:GITHUB_OUTPUT -Value "DEPLOY_TARGET=$($env:secrets_DEPLOY_SERVER_TARGET_WINDOWS_SPC_MIN)"
+            }
+          }  
+        
+          switch ("${{ matrix.runner }}") {
+              "windows-latest" {
+                  Add-Content -Path $env:GITHUB_OUTPUT -Value "OS=windows"
+                  Add-Content -Path $env:GITHUB_OUTPUT -Value "ARCH=x86_64"
+                  Add-Content -Path $env:GITHUB_OUTPUT -Value "CMD=bin/spc"
+              }
+          }
             
       - name: "Checkout remote"
         if: github.repository != 'crazywhalecc/static-php-cli'
@@ -91,7 +90,7 @@ jobs:
           ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
           ${{ steps.process-env.outputs.CMD }} install-pkg upx
           
-          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ matrix.extensions }}" --debug --with-upx-pack
+          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug --with-upx-pack
 
           $PHPVER = ${{ steps.process-env.outputs.CMD }} dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
