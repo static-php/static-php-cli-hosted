@@ -121,7 +121,7 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
           localPath: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remotePath: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
+          remotePath: "${{ steps.process-env.outputs.DEPLOY_TARGET }}"
           
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
