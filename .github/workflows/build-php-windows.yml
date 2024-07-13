@@ -104,24 +104,22 @@ jobs:
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
       - name: "Deploy cli to Zhamao Server"
-        uses: Creepios/sftp-action@v1.0.5
+        uses: garygrossgarten/github-action-scp@release
         with:
+          local: "dist/php-${{ env.PHPVER }}-cli-win.zip"
+          remote: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
-          port: ${{ secrets.DEPLOY_SERVER_PORT }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
-          localPath: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remotePath: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
-          
-      - name: "Deploy micro to Zhamao Server"
-        uses: Creepios/sftp-action@v1.0.5
+
+      - name: "Deploy cli to Zhamao Server"
+        uses: garygrossgarten/github-action-scp@release
         with:
+          local: "dist/php-${{ env.PHPVER }}-micro-win.zip"
+          remote: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
-          port: ${{ secrets.DEPLOY_SERVER_PORT }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
-          localPath: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remotePath: "${{ steps.process-env.outputs.DEPLOY_TARGET }}"
           
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
