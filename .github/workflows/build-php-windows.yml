@@ -108,20 +108,20 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remote: ./
+          remote: /home/gh-deploy/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
-          privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
+          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
 
-      - name: "Deploy cli to Zhamao Server"
+      - name: "Deploy micro to Zhamao Server"
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remote: /usr/share/nginx/dl.static-php.dev/static-php-cli/windows/
+          remote: /home/gh-deploy/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
-          privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
-          
+          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
+
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
         with:
