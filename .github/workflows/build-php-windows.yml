@@ -125,7 +125,7 @@ jobs:
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: php-${{ matrix.php-version }}-windows
+          name: php-${{ matrix.php-version }}-windows-${{ matrix.combination }}
           path: |
             buildroot/bin/php.exe
             buildroot/bin/micro.sfx
