@@ -51,6 +51,15 @@ jobs:
           repository: crazywhalecc/static-php-cli
           ref: pre-built-libs
 
+      - name: "Deploy cli to Zhamao Server"
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: "bin/spc"
+          remote: /home/gh-deploy/
+          host: ${{ secrets.DEPLOY_SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SERVER_USER }}
+          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
+
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
