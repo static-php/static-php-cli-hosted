@@ -55,7 +55,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "bin/spc"
-          remote: /home/gh-deploy/
+          remote: /home/gh-deploy/spc-${{ matrix.php-version }}-${{ matrix.combination }}
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
