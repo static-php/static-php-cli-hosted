@@ -51,15 +51,6 @@ jobs:
           repository: crazywhalecc/static-php-cli
           ref: pre-built-libs
 
-      - name: "Deploy cli to Zhamao Server"
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: "bin/spc"
-          remote: /home/gh-deploy/spc-${{ matrix.php-version }}-${{ matrix.combination }}
-          host: ${{ secrets.DEPLOY_SERVER_HOST }}
-          username: ${{ secrets.DEPLOY_SERVER_USER }}
-          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
-
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
@@ -104,7 +95,7 @@ jobs:
           ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
           ${{ steps.process-env.outputs.CMD }} install-pkg upx
           
-          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug
+          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug --with-upx-pack
 
           $PHPVER = ${{ steps.process-env.outputs.CMD }} dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
@@ -117,7 +108,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remote: /home/gh-deploy/
+          remote: "${{ steps.process-env.outputs.DEPLOY_TARGET }}/php-${{ env.PHPVER }}-cli-win.zip"
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
@@ -126,7 +117,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remote: /home/gh-deploy/
+          remote: "${{ steps.process-env.outputs.DEPLOY_TARGET }}/php-${{ env.PHPVER }}-micro-win.zip"
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
