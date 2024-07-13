@@ -95,12 +95,13 @@ jobs:
           ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
           ${{ steps.process-env.outputs.CMD }} install-pkg upx
           
-          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug --with-upx-pack
+          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug
 
           $PHPVER = ${{ steps.process-env.outputs.CMD }} dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
           Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
           Compress-Archive -Path "buildroot\bin\micro.sfx" -DestinationPath "dist\php-$PHPVER-micro-win.zip"
+          ls dist
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
       - name: "Deploy cli to Zhamao Server"
