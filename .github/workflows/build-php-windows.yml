@@ -107,7 +107,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remote: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
+          remote: /usr/share/nginx/dl.static-php.dev/static-php-cli/windows/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
@@ -116,7 +116,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remote: ${{ steps.process-env.outputs.DEPLOY_TARGET }}/
+          remote: /usr/share/nginx/dl.static-php.dev/static-php-cli/windows/
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USER }}
           privateKey: ${{ secrets.DEPLOY_SERVER_SECRET_KEY }}
