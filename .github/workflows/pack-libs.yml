@@ -110,7 +110,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: crazywhalecc/static-php-cli
-          ref: fix/icu-missing-tools
+          ref: main
 
       - name: "Setup PHP"
         if: matrix.runner != 'ubuntu-20.04'
