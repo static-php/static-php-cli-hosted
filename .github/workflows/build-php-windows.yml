@@ -104,23 +104,25 @@ jobs:
           ls dist
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
-      - name: "Deploy cli to Zhamao Server"
-        uses: garygrossgarten/github-action-scp@release
+      - name: "Deploy cli to self-hosted OSS"
+        uses: shallwefootball/s3-upload-action@master
         with:
-          local: "dist/php-${{ env.PHPVER }}-cli-win.zip"
-          remote: "${{ steps.process-env.outputs.DEPLOY_TARGET }}/php-${{ env.PHPVER }}-cli-win.zip"
-          host: ${{ secrets.DEPLOY_SERVER_HOST }}
-          username: ${{ secrets.DEPLOY_SERVER_USER }}
-          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: "dist/php-${{ env.PHPVER }}-cli-win.zip"
+          destination_dir: static-php-cli/windows/${{ matrix.combination }}/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
 
-      - name: "Deploy micro to Zhamao Server"
-        uses: garygrossgarten/github-action-scp@release
+      - name: "Deploy micro.sfx to self-hosted OSS"
+        uses: shallwefootball/s3-upload-action@master
         with:
-          local: "dist/php-${{ env.PHPVER }}-micro-win.zip"
-          remote: "${{ steps.process-env.outputs.DEPLOY_TARGET }}/php-${{ env.PHPVER }}-micro-win.zip"
-          host: ${{ secrets.DEPLOY_SERVER_HOST }}
-          username: ${{ secrets.DEPLOY_SERVER_USER }}
-          password: ${{ secrets.DEPLOY_SERVER_PASSWORD }}
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: "dist/php-${{ env.PHPVER }}-micro-win.zip"
+          destination_dir: static-php-cli/windows/${{ matrix.combination }}/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v4
