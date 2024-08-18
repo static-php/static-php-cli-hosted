@@ -105,7 +105,7 @@ jobs:
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
       - name: "Deploy cli to self-hosted OSS"
-        uses: static-php/s3-upload-action@master
+        uses: static-php/upload-s3-action@v1.0.0
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -115,7 +115,7 @@ jobs:
           endpoint: ${{ secrets.AWS_ENDPOINT }}
 
       - name: "Deploy micro.sfx to self-hosted OSS"
-        uses: static-php/s3-upload-action@master
+        uses: static-php/upload-s3-action@v1.0.0
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
