@@ -105,7 +105,7 @@ jobs:
           echo ("PHPVER=" + $PHPVER) >> $env:GITHUB_ENV
 
       - name: "Add README for ${{ matrix.combination }}"
-        if: matrix.php-version == "8.3"
+        if: ${{ matrix.php-version == "8.3" }}
         run:
           $content = "# Note`n`nCurrent distribution uses extensions:`n`n${{ steps.process-env.outputs.EXTENSIONS }}`n`nUsing compile command:`n`n  bin/spc build --build-cli --build-micro ""${{ steps.process-env.outputs.EXTENSIONS }}"" --debug --with-upx-pack"
           [System.Text.Encoding]::UTF8.GetBytes($content) | Set-Content -Path "dist\README.txt" -Encoding Byte
