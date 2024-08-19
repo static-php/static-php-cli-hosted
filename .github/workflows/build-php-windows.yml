@@ -108,7 +108,7 @@ jobs:
         if: ${{ matrix.php-version == '8.3' }}
         shell: bash
         run: |
-          echo "# Note\n\nCurrent distribution uses extensions:\n\n${{ steps.process-env.outputs.EXTENSIONS }}\n\nUsing compile command:\n\n  bin/spc build --build-cli --build-micro \"${{ steps.process-env.outputs.EXTENSIONS }}\" --debug --with-upx-pack" > dist/README.txt
+          echo -e "# Note\n\nCurrent distribution uses extensions:\n\n${{ steps.process-env.outputs.EXTENSIONS }}\n\nUsing compile command:\n\n  bin/spc build --build-cli --build-micro \"${{ steps.process-env.outputs.EXTENSIONS }}\" --debug --with-upx-pack" > dist/README.txt
           
       - name: "Deploy to self-hosted OSS"
         uses: static-php/upload-s3-action@v1.0.0
