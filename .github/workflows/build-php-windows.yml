@@ -107,8 +107,7 @@ jobs:
       - name: "Add README for ${{ matrix.combination }}"
         if: ${{ matrix.php-version == '8.3' }}
         run:
-          $content = "# Note`n`nCurrent distribution uses extensions:`n`n${{ steps.process-env.outputs.EXTENSIONS }}`n`nUsing compile command:`n`n  bin/spc build --build-cli --build-micro ""${{ steps.process-env.outputs.EXTENSIONS }}"" --debug --with-upx-pack"
-          [System.Text.Encoding]::UTF8.GetBytes($content) | Set-Content -Path "dist\README.txt" -Encoding Byte
+          [System.Text.Encoding]::UTF8.GetBytes("# Note`n`nCurrent distribution uses extensions:`n`n${{ steps.process-env.outputs.EXTENSIONS }}`n`nUsing compile command:`n`n  bin/spc build --build-cli --build-micro ""${{ steps.process-env.outputs.EXTENSIONS }}"" --debug --with-upx-pack") | Set-Content -Path "dist\README.txt" -Encoding Byte
 
       - name: "Deploy to self-hosted OSS"
         uses: static-php/upload-s3-action@v1.0.0
