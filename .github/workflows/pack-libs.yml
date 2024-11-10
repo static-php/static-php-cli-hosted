@@ -56,6 +56,7 @@ jobs:
           - readline
           - unixodbc
           - xz
+          - grpc
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -71,6 +72,7 @@ jobs:
           - { runner: "windows-2019", lib: "ncurses" }
           - { runner: "windows-2019", lib: "readline" }
           - { runner: "windows-2019", lib: "unixodbc" }
+          - { runner: "windows-2019", lib: "grpc" }
       fail-fast: false
     steps:
       - name: "Process env string"
