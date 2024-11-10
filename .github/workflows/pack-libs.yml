@@ -22,7 +22,7 @@ jobs:
   build:
     name: "Pack ${{ matrix.lib }} for ${{ matrix.runner }}"
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 120
+    timeout-minutes: 240
     strategy:
       matrix:
         runner:
