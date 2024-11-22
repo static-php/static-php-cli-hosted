@@ -11,10 +11,10 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "8.0"
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         runner:
           - "ubuntu-latest"
           - "macos-13"
@@ -159,7 +159,7 @@ jobs:
           tar -czf dist/php-$PHPVER-cli-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C tmp_dist/ php
           tar -czf dist/php-$PHPVER-micro-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C tmp_dist/ micro.sfx
           tar -czf dist/php-$PHPVER-fpm-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C tmp_dist/ php-fpm
-          if [ "${{ matrix.php-version }}" == "8.3" ] && [ "${{ matrix.runner }}" == "ubuntu-latest" ]; then
+          if [ "${{ matrix.php-version }}" == "8.4" ] && [ "${{ matrix.runner }}" == "ubuntu-latest" ]; then
             cp -r buildroot/license dist/
             cp buildroot/build-extensions.json dist/
             cp buildroot/build-libraries.json dist/
