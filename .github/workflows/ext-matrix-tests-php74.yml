@@ -1,4 +1,4 @@
-name: "Extension matrix tests PHP 7.4"
+name: "Extension matrix tests PHP 8.0"
 
 on:
   workflow_dispatch:
@@ -78,7 +78,7 @@ jobs:
           - zlib
           - zstd
         php-version:
-          - "7.4"
+          - "8.0"
         operating-system:
           - "ubuntu-latest"
           #- "macos-13"
