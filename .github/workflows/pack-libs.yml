@@ -57,6 +57,9 @@ jobs:
           - unixodbc
           - xz
           - grpc
+          - libaom
+          - libde265
+          - libheif
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -73,6 +76,9 @@ jobs:
           - { runner: "windows-2019", lib: "readline" }
           - { runner: "windows-2019", lib: "unixodbc" }
           - { runner: "windows-2019", lib: "grpc" }
+          - { runner: "windows-2019", lib: "libaom" }
+          - { runner: "windows-2019", lib: "libde265" }
+          - { runner: "windows-2019", lib: "libheif" }
       fail-fast: false
     steps:
       - name: "Process env string"
