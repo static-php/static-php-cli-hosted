@@ -54,9 +54,9 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.4
           tools: pecl, composer
-          extensions: curl, openssl, mbstring
+          extensions: curl, openssl, mbstring, filter
           ini-values: memory_limit=-1
 
       - name: "Cache composer packages"
