@@ -60,6 +60,8 @@ jobs:
           - libaom
           - libde265
           - libheif
+          - libacl
+          - attr
         exclude:
           - { runner: "windows-2019", lib: "pkg-config" }
           - { runner: "windows-2019", lib: "gmp" }
@@ -79,6 +81,8 @@ jobs:
           - { runner: "windows-2019", lib: "libaom" }
           - { runner: "windows-2019", lib: "libde265" }
           - { runner: "windows-2019", lib: "libheif" }
+          - { runner: "windows-2019", lib: "libacl" }
+          - { runner: "windows-2019", lib: "attr" }
       fail-fast: false
     steps:
       - name: "Process env string"
