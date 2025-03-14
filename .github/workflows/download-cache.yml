@@ -43,7 +43,7 @@ jobs:
 
       # Upload downloaded files
       - name: "Upload action artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: download-files-${{ matrix.php-version }}
           path: downloads/
