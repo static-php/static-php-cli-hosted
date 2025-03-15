@@ -3,7 +3,7 @@ name: Archive download sources weekly
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "0 1 */3 * *"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -12,9 +12,6 @@ jobs:
   download:
     name: "Archive downloads to zip"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: [ "8.1", "8.2", "8.3", "8.4" ]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -38,8 +35,7 @@ jobs:
       # If there's no dependencies cache, fetch sources, with or without debug
       - name: "Download all sources"
         run: |
-          ./spc download --with-php=${{ matrix.php-version }} --all --debug --retry=5
-          ./spc doctor --auto-fix
+          ./spc download --all --debug --retry=5
 
       # Upload downloaded files
       - name: "Upload action artifacts"
