@@ -11,7 +11,7 @@ env:
 jobs:
   download:
     name: "Archive downloads to zip"
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -24,7 +24,7 @@ jobs:
           repo: crazywhalecc/static-php-cli
           branch: main
           workflow: release-build.yml
-          name: "spc-linux-x86_64"
+          name: "spc-macos-aarch64"
 
       - name: "Validate SPC bin"
         run: |
