@@ -35,7 +35,7 @@ jobs:
       # If there's no dependencies cache, fetch sources, with or without debug
       - name: "Download all sources"
         run: |
-          ./spc download --all --debug --retry=5
+          ./spc download --all --debug --retry=5 --shallow-clone
 
       # Upload downloaded files
       - name: "Upload action artifacts"
