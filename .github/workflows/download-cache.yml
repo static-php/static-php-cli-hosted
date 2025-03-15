@@ -49,7 +49,7 @@ jobs:
           cd downloads/
           zip -r download-files-${{ matrix.php-version }}.zip .
           mkdir ../downloads-archive/
-          mv download-files-${{ matrix.php-version }}.zip ../downloads-archive/
+          mv download-files-8.4.zip ../downloads-archive/
           cd ..
 
       - name: "Deploy to self-hosted OSS"
