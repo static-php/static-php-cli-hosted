@@ -3,7 +3,7 @@ name: Archive download sources weekly
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 1 * * 5"
+    - cron: "0 1 * * *"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +38,7 @@ jobs:
       # If there's no dependencies cache, fetch sources, with or without debug
       - name: "Download all sources"
         run: |
-          ./spc download --with-php=${{ matrix.php-version }} --all --debug
+          ./spc download --with-php=${{ matrix.php-version }} --all --debug --retry=5
           ./spc doctor --auto-fix
 
       # Upload downloaded files
