@@ -7,6 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.FRANKEN_GITHUB_TOKEN }}
+  PHP_VERSION: 8.4
 
 jobs:
   download:
@@ -47,9 +48,9 @@ jobs:
       - name: "Archive downloads as zip"
         run: |
           cd downloads/
-          zip -r download-files-${{ matrix.php-version }}.zip .
+          zip -r download-files-${{ env.PHP_VERSION }}.zip .
           mkdir ../downloads-archive/
-          mv download-files-8.4.zip ../downloads-archive/
+          mv download-files-${{ env.PHP_VERSION }}.zip ../downloads-archive/
           cd ..
 
       - name: "Deploy to self-hosted OSS"
