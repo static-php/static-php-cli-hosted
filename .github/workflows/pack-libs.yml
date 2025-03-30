@@ -26,8 +26,10 @@ jobs:
     strategy:
       matrix:
         runner:
-          - ubuntu-latest
-          - ubuntu-20.04
+          - ubuntu-24.04 # x86_64 musl
+          - ubuntu-22.04 # x86_64 glibc
+          - ubuntu-24.04-arm # aarch64 musl
+          - ubuntu-22.04-arm # aarch64 glibc
           - macos-13
           - windows-2019
           - macos-14
@@ -86,15 +88,25 @@ jobs:
         shell: bash
         run: |
           case "${{ matrix.runner }}" in
-            ubuntu-latest)
-              echo "OS=linux" >> "$GITHUB_OUTPUT"
+            ubuntu-24.04)
+              echo "OS=linux-musl" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
-            ubuntu-20.04)
-              echo "OS=linux" >> "$GITHUB_OUTPUT"
+            ubuntu-22.04)
+              echo "OS=linux-glibc" >> "$GITHUB_OUTPUT"
+              echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
+              echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
+              ;;
+            ubuntu-24.04-arm)
+              echo "OS=linux-musl" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
-              echo CMD="SPC_USE_ARCH=aarch64 bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              echo CMD="bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              ;;
+            ubuntu-22.04-arm)
+              echo "OS=linux-glibc" >> "$GITHUB_OUTPUT"
+              echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
+              echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
               ;;
             windows-2019)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
@@ -121,7 +133,7 @@ jobs:
           ref: main
 
       - name: "Setup PHP"
-        if: matrix.runner != 'ubuntu-20.04'
+        if: matrix.runner != 'ubuntu-22.04' && matrix.runner != 'ubuntu-22.04-arm'
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
@@ -146,7 +158,7 @@ jobs:
           key: pack-lib-dependencies
 
       - name: "Install Dependencies"
-        if: matrix.runner != 'ubuntu-20.04'
+        if: matrix.runner != 'ubuntu-22.04' && matrix.runner != 'ubuntu-22.04-arm'
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
