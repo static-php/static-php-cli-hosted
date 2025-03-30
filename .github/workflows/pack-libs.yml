@@ -130,7 +130,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: crazywhalecc/static-php-cli
-          ref: main
+          ref: downloader-enhancement
 
       - name: "Setup PHP"
         if: matrix.runner != 'ubuntu-22.04' && matrix.runner != 'ubuntu-22.04-arm'
