@@ -17,6 +17,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MUSL_VERSION: "1.2.5"
+  GLIBC_VERSION: "2.17"
 
 jobs:
   build:
@@ -89,22 +91,22 @@ jobs:
         run: |
           case "${{ matrix.runner }}" in
             ubuntu-24.04)
-              echo "OS=linux-musl" >> "$GITHUB_OUTPUT"
+              echo "OS=linux-musl-${{ env.MUSL_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-22.04)
-              echo "OS=linux-glibc" >> "$GITHUB_OUTPUT"
+              echo "OS=linux-glibc-${{ env.GLIBC_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-24.04-arm)
-              echo "OS=linux-musl" >> "$GITHUB_OUTPUT"
+              echo "OS=linux-musl-${{ env.MUSL_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo CMD="bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-22.04-arm)
-              echo "OS=linux-glibc" >> "$GITHUB_OUTPUT"
+              echo "OS=linux-glibc-${{ env.GLIBC_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
               ;;
