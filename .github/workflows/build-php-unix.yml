@@ -20,7 +20,7 @@ jobs:
         runner:
           - "ubuntu-latest"
           - "macos-13"
-          - "ubuntu-20.04"
+          - "ubuntu-24.04-arm"
           - "macos-14"
         combination:
           - minimal
@@ -52,10 +52,10 @@ jobs:
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
-            ubuntu-20.04)
+            ubuntu-24.04-arm)
               echo "OS=linux" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
-              echo CMD="SPC_USE_ARCH=aarch64 bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              echo CMD="bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
               ;;
             windows-2019)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
@@ -82,7 +82,7 @@ jobs:
           ref: main
 
       - name: "Setup PHP"
-        if: matrix.runner != 'ubuntu-20.04'
+        if: matrix.runner != 'ubuntu-24.04-arm' && matrix.runner != 'ubuntu-latest'
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
@@ -107,7 +107,7 @@ jobs:
           key: pack-lib-dependencies-${{ matrix.combination }}-${{ matrix.php-version }}-${{ matrix.runner }}
 
       - name: "Install Dependencies"
-        if: matrix.runner != 'ubuntu-20.04'
+        if: matrix.runner != 'ubuntu-24.04-arm' && matrix.runner != 'ubuntu-latest'
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
 
       - run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
@@ -122,9 +122,7 @@ jobs:
         run: |
           if [ "${{ steps.process-env.outputs.OS }}" = "linux" ]; then
             ${{ steps.process-env.outputs.CMD }} install-pkg upx
-            if [ "${{ steps.process-env.outputs.ARCH }}" = "x86_64" ]; then
-              UPX=--with-upx-pack
-            fi
+            UPX=--with-upx-pack
           fi
           
           ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro --build-fpm ${{ steps.process-env.outputs.EXTENSIONS }} --debug $UPX
@@ -134,21 +132,6 @@ jobs:
           cp buildroot/bin/php tmp_dist/
           cp buildroot/bin/micro.sfx tmp_dist/
           cp buildroot/bin/php-fpm tmp_dist/
-
-          # UPX outside for linux-aarch64
-          if [ "${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}" = "linux-aarch64" ]; then
-            mkdir -p upx-x86_64
-            cd upx-x86_64
-            curl -#fSL -o upx.txz https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-amd64_linux.tar.xz
-            tar -xf upx.txz --strip-components 1
-            ./upx --best ../tmp_dist/php
-            ./upx --best ../tmp_dist/micro.sfx
-            SFX_SIZE=$(readelf -l ../tmp_dist/micro.sfx | awk '/LOAD|GNU_STACK/ {getline; print $1, $2, $3, $4, $6, $7}' | sed -n '2p' | awk '{print $1}')
-            head -c $(printf "%d" $SFX_SIZE) ../tmp_dist/micro.sfx > ../tmp_dist/micro.sfx.new
-            mv ../tmp_dist/micro.sfx.new ../tmp_dist/micro.sfx
-            ./upx --best ../tmp_dist/php-fpm
-            cd ..
-          fi
 
           PHPVER=$(cat source/php-src/main/php_version.h | grep "PHP_VERSION " | awk -F\" '{print $2}')
           
