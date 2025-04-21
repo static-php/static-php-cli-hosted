@@ -79,9 +79,11 @@ jobs:
               cp -- "$src_file" "$new_name"
               echo "Renamed: $src_file -> $new_name"
           }
-          SOURCE_TYPE=$(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".source_type'
+          SOURCE_TYPE=$(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".source_type')
           if [ "$SOURCE_TYPE" = "archive" ]; then
+            cd downloads
             rename_file $(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".filename') ${{ matrix.source }}-spc-mirror
+            cd ..
           else
             cd downloads
             tar -cJvf ${{ matrix.source }}-spc-mirror.txz $(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".dirname')
