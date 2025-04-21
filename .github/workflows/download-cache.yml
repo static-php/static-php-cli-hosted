@@ -53,6 +53,7 @@ jobs:
           rename_file() {
               local src_file="$1"
               local target="$2"
+              local destination_dir="$3"
               
               if [[ ! -f "$src_file" ]]; then
                   echo "Error: '$src_file' is not a valid file" >&2
@@ -77,16 +78,19 @@ jobs:
               
               local new_name="${target}${ext}"
               cp -- "$src_file" "$new_name"
-              echo "Renamed: $src_file -> $new_name"
+              mv "$new_name" "$destination_dir"/
+              echo "Renamed: $src_file -> "$destination_dir"/"$new_name"
           }
+          mkdir downloads-mirror-${{ matrix.source }}
           SOURCE_TYPE=$(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".source_type')
           if [ "$SOURCE_TYPE" = "archive" ]; then
             cd downloads
-            rename_file $(cat .lock.json | jq -M -c -r '."${{ matrix.source }}".filename') ${{ matrix.source }}-spc-mirror
+            rename_file $(cat .lock.json | jq -M -c -r '."${{ matrix.source }}".filename') ${{ matrix.source }}-spc-mirror ../downloads-mirror-${{ matrix.source }}
             cd ..
           else
             cd downloads
             tar -cJvf ${{ matrix.source }}-spc-mirror.txz $(cat .lock.json | jq -M -c -r '."${{ matrix.source }}".dirname')
+            mv ${{ matrix.source }}-spc-mirror.txz ../downloads-mirror-${{ matrix.source }}/
             cd ..
           fi
       - name: "Deploy to OSS"
@@ -95,6 +99,6 @@ jobs:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: ${{ secrets.AWS_BUCKET }}
-          source_dir: downloads/${{ matrix.source }}-spc-mirror.txz
-          destination_dir: static-php-cli/deps/spc-download-mirror/
+          source_dir: downloads-mirror-${{ matrix.source }}/
+          destination_dir: static-php-cli/deps/spc-download-mirror/${{ matrix.source }}/
           endpoint: ${{ secrets.AWS_ENDPOINT }}
