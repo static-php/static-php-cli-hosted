@@ -79,7 +79,7 @@ jobs:
               local new_name="${target}${ext}"
               cp -- "$src_file" "$new_name"
               mv "$new_name" "$destination_dir"/
-              echo "Renamed: $src_file -> "$destination_dir"/"$new_name"
+              echo "Renamed: $src_file -> $destination_dir/$new_name"
           }
           mkdir downloads-mirror-${{ matrix.source }}
           SOURCE_TYPE=$(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.source }}".source_type')
