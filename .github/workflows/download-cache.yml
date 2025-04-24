@@ -89,7 +89,7 @@ jobs:
             cd ..
           else
             cd downloads
-            tar -cJvf ${{ matrix.source }}-spc-mirror.txz $(cat .lock.json | jq -M -c -r '."${{ matrix.source }}".dirname')
+            tar --exclude-vcs -cJvf ${{ matrix.source }}-spc-mirror.txz $(cat .lock.json | jq -M -c -r '."${{ matrix.source }}".dirname')
             mv ${{ matrix.source }}-spc-mirror.txz ../downloads-mirror-${{ matrix.source }}/
             cd ..
           fi
