@@ -47,7 +47,7 @@ jobs:
           bin/setup-runtime
           bin/php bin/composer install --no-dev --no-ansi -q --no-interaction
       - name: "Download source ${{ matrix.source }}"
-        run: bin/php bin/spc download ${{ matrix.source }} --debug --ignore-cache-sources --no-alt
+        run: bin/php bin/spc download ${{ matrix.source }} --debug --ignore-cache-sources --no-alt --shallow-clone
       - name: "Parse lock file and re-package with file"
         run: |
           rename_file() {
