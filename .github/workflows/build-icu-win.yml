@@ -1,0 +1,33 @@
+name: Build icu-static for x64-windows
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 5"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    name: "Build icu-static with vcpkg"
+    runs-on: windows-latest
+    timeout-minutes: 240
+    steps:
+      - name: "Vcpkg build"
+        run: vcpkg install icu:x64-windows-static --x-install-root=.
+
+      - name: "Pack"
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Compress-Archive -Path "x64-windows-static" -DestinationPath "dist\icu-static-windows-x64.zip"
+
+      - name: "Deploy to self-hosted OSS"
+        uses: static-php/upload-s3-action@v1.0.0
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: "dist/"
+          destination_dir: static-php-cli/deps/icu-static-windows-x64/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
