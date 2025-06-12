@@ -94,36 +94,43 @@ jobs:
               echo "OS=linux-musl-${{ env.MUSL_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-22.04)
               echo "OS=linux-glibc-${{ env.GLIBC_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-24.04-arm)
               echo "OS=linux-musl-${{ env.MUSL_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo CMD="bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
             ubuntu-22.04-arm)
               echo "OS=linux-glibc-${{ env.GLIBC_VERSION }}" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
-            windows-2019)
+            windows-2019|windows-2022|windows-latest)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=tgz" >> "$GITHUB_OUTPUT"
               ;;
             macos-13)
               echo "OS=darwin" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
             macos-14)
               echo "OS=darwin" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
+              echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
           esac
 
@@ -179,18 +186,18 @@ jobs:
       - name: "Upload packed lib (${{ matrix.lib }} for ${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }})"
         uses: actions/upload-artifact@v4
         with:
-          path: dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.txz
+          path: dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.${{ steps.process-env.outputs.SUFFIX }}
           name: ${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}
 
       - name: "Upload to current release event"
         if: github.repository == 'static-php/static-php-cli-hosted' && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.txz
+          files: dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.${{ steps.process-env.outputs.SUFFIX }}
 
       - name: "Update latest release of hosted repo"
         if: github.repository == 'static-php/static-php-cli-hosted' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
         shell: bash
         run: |
           ref="$(gh release view --repo static-php/static-php-cli-hosted --json tagName --jq '.tagName')"
-          gh release upload "$ref" "dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.txz" --repo static-php/static-php-cli-hosted --clobber
+          gh release upload "$ref" "dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.${{ steps.process-env.outputs.SUFFIX }}" --repo static-php/static-php-cli-hosted --clobber
