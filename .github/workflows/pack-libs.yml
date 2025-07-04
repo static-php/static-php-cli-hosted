@@ -33,7 +33,7 @@ jobs:
           - ubuntu-24.04-arm # aarch64 musl
           - ubuntu-22.04-arm # aarch64 glibc
           - macos-13
-          - windows-2019
+          - windows-2022
           - macos-14
         lib:
           - zlib
@@ -65,24 +65,24 @@ jobs:
           - libde265
           - libheif
         exclude:
-          - { runner: "windows-2019", lib: "pkg-config" }
-          - { runner: "windows-2019", lib: "gmp" }
-          - { runner: "windows-2019", lib: "liblz4" }
-          - { runner: "windows-2019", lib: "brotli" }
-          - { runner: "windows-2019", lib: "libargon2" }
-          - { runner: "windows-2019", lib: "libiconv" }
-          - { runner: "windows-2019", lib: "libtiff" }
-          - { runner: "windows-2019", lib: "icu" }
-          - { runner: "windows-2019", lib: "libcares" }
-          - { runner: "windows-2019", lib: "libevent" }
-          - { runner: "windows-2019", lib: "libsodium" }
-          - { runner: "windows-2019", lib: "ncurses" }
-          - { runner: "windows-2019", lib: "readline" }
-          - { runner: "windows-2019", lib: "unixodbc" }
-          - { runner: "windows-2019", lib: "grpc" }
-          - { runner: "windows-2019", lib: "libaom" }
-          - { runner: "windows-2019", lib: "libde265" }
-          - { runner: "windows-2019", lib: "libheif" }
+          - { runner: "windows-2022", lib: "pkg-config" }
+          - { runner: "windows-2022", lib: "gmp" }
+          - { runner: "windows-2022", lib: "liblz4" }
+          - { runner: "windows-2022", lib: "brotli" }
+          - { runner: "windows-2022", lib: "libargon2" }
+          - { runner: "windows-2022", lib: "libiconv" }
+          - { runner: "windows-2022", lib: "libtiff" }
+          - { runner: "windows-2022", lib: "icu" }
+          - { runner: "windows-2022", lib: "libcares" }
+          - { runner: "windows-2022", lib: "libevent" }
+          - { runner: "windows-2022", lib: "libsodium" }
+          - { runner: "windows-2022", lib: "ncurses" }
+          - { runner: "windows-2022", lib: "readline" }
+          - { runner: "windows-2022", lib: "unixodbc" }
+          - { runner: "windows-2022", lib: "grpc" }
+          - { runner: "windows-2022", lib: "libaom" }
+          - { runner: "windows-2022", lib: "libde265" }
+          - { runner: "windows-2022", lib: "libheif" }
       fail-fast: false
     steps:
       - name: "Process env string"
@@ -114,7 +114,7 @@ jobs:
               echo "CMD=bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
               echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
-            windows-2019|windows-2022|windows-latest)
+            windows-2022|windows-2022|windows-latest)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
@@ -175,12 +175,12 @@ jobs:
       - run: ${{ steps.process-env.outputs.CMD }} download --for-libs="${{ matrix.lib }}" --debug --retry=5 --shallow-clone
 
       - name: "Download pre-built pkg-config for ${{ matrix.runner }}"
-        if: matrix.runner != 'windows-2019' && matrix.lib != 'pkg-config'
+        if: matrix.runner != 'windows-2022' && matrix.lib != 'pkg-config'
         run: |
           ${{ steps.process-env.outputs.CMD }} download --for-libs="pkg-config" --debug --retry=5 --shallow-clone --prefer-pre-built
           ${{ steps.process-env.outputs.CMD }} build:libs pkg-config --debug
 
-      - if: matrix.runner != 'windows-2019' || matrix.lib != 'pkg-config'
+      - if: matrix.runner != 'windows-2022' || matrix.lib != 'pkg-config'
         run: ${{ steps.process-env.outputs.CMD }} dev:pack-lib --debug ${{ matrix.lib }}
 
       - name: "Upload packed lib (${{ matrix.lib }} for ${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }})"
