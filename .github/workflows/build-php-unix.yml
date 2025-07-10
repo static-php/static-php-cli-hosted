@@ -41,7 +41,7 @@ jobs:
               echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET }}" >> "$GITHUB_OUTPUT"
               ;;
             bulk)    
-              echo "EXTENSIONS=apcu,bcmath,bz2,calendar,ctype,curl,dba,dom,event,exif,fileinfo,filter,ftp,gd,gmp,iconv,imagick,imap,intl,mbregex,mbstring,mysqli,mysqlnd,opcache,openssl,pcntl,pdo,pdo_mysql,pgsql,phar,posix,protobuf,readline,redis,session,shmop,simplexml,soap,sockets,sodium,sqlite3,swoole,swoole-hook-mysql,swoole-hook-pgsql,swoole-hook-sqlite,sysvmsg,sysvsem,sysvshm,tokenizer,xml,xmlreader,xmlwriter,xsl,zip,zlib" >> "$GITHUB_OUTPUT"
+              echo "EXTENSIONS=apcu,bcmath,bz2,calendar,ctype,curl,dba,dom,event,exif,fileinfo,filter,ftp,gd,gmp,iconv,imagick,imap,intl,mbregex,mbstring,mysqli,mysqlnd,opcache,openssl,opentelemetry,pcntl,pdo,pdo_mysql,pgsql,phar,posix,protobuf,readline,redis,session,shmop,simplexml,soap,sockets,sodium,sqlite3,swoole,swoole-hook-mysql,swoole-hook-pgsql,swoole-hook-sqlite,sysvmsg,sysvsem,sysvshm,tokenizer,xml,xmlreader,xmlwriter,xsl,zip,zlib" >> "$GITHUB_OUTPUT"
               echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_BULK }}" >> "$GITHUB_OUTPUT"
               ;;
           esac
