@@ -22,10 +22,24 @@ jobs:
           - "macos-13"
           - "ubuntu-24.04-arm"
           - "macos-14"
+          - "ubuntu-22.04"
+          - "ubuntu-22.04-arm"
         combination:
           - minimal
           - bulk
           - common
+          - gnu-bulk
+        exclude:
+          - { runner: "ubuntu-latest", combination: "gnu-bulk" }
+          - { runner: "ubuntu-24.04-arm", combination: "gnu-bulk" }
+          - { runner: "macos-13", combination: "gnu-bulk" }
+          - { runner: "macos-14", combination: "gnu-bulk" }
+          - { runner: "ubuntu-22.04", combination: "minimal" }
+          - { runner: "ubuntu-22.04", combination: "bulk" }
+          - { runner: "ubuntu-22.04", combination: "common" }
+          - { runner: "ubuntu-22.04-arm", combination: "minimal" }
+          - { runner: "ubuntu-22.04-arm", combination: "bulk" }
+          - { runner: "ubuntu-22.04-arm", combination: "common" }
     steps:
       - name: "Process env string"
         id: process-env
@@ -34,15 +48,12 @@ jobs:
           case "${{ matrix.combination }}" in
             minimal) 
               echo "EXTENSIONS=pcntl,posix,mbstring,filter,tokenizer,phar" >> "$GITHUB_OUTPUT"
-              echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_MINIMAL }}" >> "$GITHUB_OUTPUT"
               ;;
             common)  
               echo "EXTENSIONS=bcmath,bz2,calendar,ctype,curl,dom,exif,fileinfo,filter,ftp,gd,gmp,iconv,xml,mbstring,mbregex,mysqlnd,openssl,pcntl,pdo,pdo_mysql,pdo_sqlite,phar,posix,redis,session,simplexml,soap,sockets,sqlite3,tokenizer,xmlwriter,xmlreader,zlib,zip" >> "$GITHUB_OUTPUT"
-              echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET }}" >> "$GITHUB_OUTPUT"
               ;;
-            bulk)    
+            bulk|gnu-bulk)    
               echo "EXTENSIONS=apcu,bcmath,bz2,calendar,ctype,curl,dba,dom,event,exif,fileinfo,filter,ftp,gd,gmp,iconv,imagick,imap,intl,mbregex,mbstring,mysqli,mysqlnd,opcache,openssl,opentelemetry,pcntl,pdo,pdo_mysql,pgsql,phar,posix,protobuf,readline,redis,session,shmop,simplexml,soap,sockets,sodium,sqlite3,swoole,swoole-hook-mysql,swoole-hook-pgsql,swoole-hook-sqlite,sysvmsg,sysvsem,sysvshm,tokenizer,xml,xmlreader,xmlwriter,xsl,zip,zlib" >> "$GITHUB_OUTPUT"
-              echo "DEPLOY_TARGET=${{ secrets.DEPLOY_SERVER_TARGET_BULK }}" >> "$GITHUB_OUTPUT"
               ;;
           esac
           
@@ -56,6 +67,16 @@ jobs:
               echo "OS=linux" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo CMD="bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
+              ;;
+            ubuntu-22.04)
+              echo "OS=linux" >> "$GITHUB_OUTPUT"
+              echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
+              echo CMD="bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
+              ;;
+            ubuntu-22.04-arm)
+              echo "OS=linux" >> "$GITHUB_OUTPUT"
+              echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
+              echo CMD="bin/spc-gnu-docker" >> "$GITHUB_OUTPUT"
               ;;
             windows-2019)
               echo "OS=windows" >> "$GITHUB_OUTPUT"
