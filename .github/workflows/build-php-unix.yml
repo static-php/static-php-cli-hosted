@@ -103,7 +103,7 @@ jobs:
           ref: main
 
       - name: "Setup PHP"
-        if: matrix.runner != 'ubuntu-24.04-arm' && matrix.runner != 'ubuntu-latest'
+        if: ${{ !startsWith(matrix.runner, 'ubuntu') }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
@@ -128,7 +128,7 @@ jobs:
           key: pack-lib-dependencies-${{ matrix.combination }}-${{ matrix.php-version }}-${{ matrix.runner }}
 
       - name: "Install Dependencies"
-        if: matrix.runner != 'ubuntu-24.04-arm' && matrix.runner != 'ubuntu-latest'
+        if: ${{ !startsWith(matrix.runner, 'ubuntu') }}
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
 
       - run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
@@ -141,7 +141,7 @@ jobs:
 
       - name: "Build library: ${{ matrix.library }}"
         run: |
-          if [ "${{ steps.process-env.outputs.OS }}" = "linux" ]; then
+          if [ "${{ steps.process-env.outputs.OS }}" = "linux" ] && [ "${{ steps.process-env.outputs.CMD }}" = "bin/spc-alpine-docker" ]; then
             ${{ steps.process-env.outputs.CMD }} install-pkg upx
             UPX=--with-upx-pack
           fi
@@ -166,6 +166,12 @@ jobs:
           tar -czf dist/php-$PHPVER-micro-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C tmp_dist/ micro.sfx
           tar -czf dist/php-$PHPVER-fpm-${{ steps.process-env.outputs.OS }}-${{ steps.process-env.outputs.ARCH }}.tar.gz -C tmp_dist/ php-fpm
           if [ "${{ matrix.php-version }}" == "8.4" ] && [ "${{ matrix.runner }}" == "ubuntu-latest" ]; then
+            cp -r buildroot/license dist/
+            cp buildroot/build-extensions.json dist/
+            cp buildroot/build-libraries.json dist/
+            echo -e "# Note\n\nCurrent distribution uses extensions:\n\n${{ steps.process-env.outputs.EXTENSIONS }}\n\nUsing compile command:\n\n  bin/spc build --build-cli --build-micro --build-fpm ${{ steps.process-env.outputs.EXTENSIONS }} --debug --with-upx-pack" > dist/README.txt
+          fi
+          if [ "${{ matrix.php-version }}" == "8.4" ] && [ "${{ matrix.runner }}" == "ubuntu-22.04" ]; then
             cp -r buildroot/license dist/
             cp buildroot/build-extensions.json dist/
             cp buildroot/build-libraries.json dist/
