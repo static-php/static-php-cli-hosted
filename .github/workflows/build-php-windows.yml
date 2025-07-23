@@ -92,13 +92,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
         run: ${{ steps.process-env.outputs.CMD }} download --with-php=${{ matrix.php-version }} --for-extensions="${{ steps.process-env.outputs.EXTENSIONS }}" --retry=5 --prefer-pre-built
 
-      - name: "Build extensions: ${{ steps.process-env.outputs.EXTENSIONS }}"
-        run: |
-          ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
-          ${{ steps.process-env.outputs.CMD }} install-pkg upx
-          
-          ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug --with-upx-pack
+      - name: "Doctor"
+        env: 
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
+        run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
 
+      - name: "Install UPX"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ${{ steps.process-env.outputs.CMD }} install-pkg upx
+
+      - name: "Build extensions: ${{ steps.process-env.outputs.EXTENSIONS }}"
+        run: ${{ steps.process-env.outputs.CMD }} build --build-cli --build-micro "${{ steps.process-env.outputs.EXTENSIONS }}" --debug --with-upx-pack
+
+      - name: "Pack PHP"
+        run: |
           $PHPVER = ${{ steps.process-env.outputs.CMD }} dev:php-ver
           New-Item -ItemType Directory -Force -Path dist
           Compress-Archive -Path "buildroot\bin\php.exe" -DestinationPath "dist\php-$PHPVER-cli-win.zip"
