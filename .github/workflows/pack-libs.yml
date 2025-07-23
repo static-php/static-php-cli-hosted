@@ -36,6 +36,12 @@ jobs:
           - windows-2022
           - macos-14
         lib:
+          - attr
+          - gmssl
+          - jbig
+          - lerc
+          - libacl
+          - libssh2
           - zlib
           - pkg-config
           - bzip2
@@ -83,6 +89,12 @@ jobs:
           - { runner: "windows-2022", lib: "libaom" }
           - { runner: "windows-2022", lib: "libde265" }
           - { runner: "windows-2022", lib: "libheif" }
+          - { runner: "windows-2022", lib: "attr" }
+          - { runner: "windows-2022", lib: "jbig" }
+          - { runner: "windows-2022", lib: "lerc" }
+          - { runner: "windows-2022", lib: "libacl" }
+          - { runner: "macos-13", lib: "libacl" }
+          - { runner: "macos-14", lib: "libacl" }
       fail-fast: false
     steps:
       - name: "Process env string"
