@@ -47,7 +47,7 @@ jobs:
         run: |
           case "${{ matrix.combination }}" in
             minimal) 
-              echo "EXTENSIONS=pcntl,posix,mbstring,filter,tokenizer,phar" >> "$GITHUB_OUTPUT"
+              echo "EXTENSIONS=iconv,pcntl,posix,mbstring,filter,tokenizer,phar" >> "$GITHUB_OUTPUT"
               ;;
             common)  
               echo "EXTENSIONS=bcmath,bz2,calendar,ctype,curl,dom,exif,fileinfo,filter,ftp,gd,gmp,iconv,xml,mbstring,mbregex,mysqlnd,openssl,pcntl,pdo,pdo_mysql,pdo_sqlite,phar,posix,redis,session,simplexml,soap,sockets,sqlite3,tokenizer,xmlwriter,xmlreader,zlib,zip" >> "$GITHUB_OUTPUT"
