@@ -50,7 +50,7 @@ jobs:
           bin/setup-runtime
           bin/php bin/composer install --no-dev --no-ansi -q --no-interaction
       - name: "Download package ${{ matrix.pkg }}"
-        run: bin/php bin/spc install-pkg ${{ matrix.pkg }} --debug --no-alt --shallow-clone
+        run: bin/php bin/spc install-pkg ${{ matrix.pkg }} --debug --no-alt --shallow-clone --skip-extract
       - name: "Parse lock file and re-package with file"
         run: |
           rename_file() {
