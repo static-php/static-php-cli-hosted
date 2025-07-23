@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       sources: ${{ steps.step1.outputs.sources }}
+      pkgs: ${{ steps.step1.outputs.pkgs }}
     steps: 
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -24,12 +25,88 @@ jobs:
       - name: "Create Matrix Variable"
         id: step1
         run: |
-          VALUE=$(cat config/source.json | jq -M -c keys)
-          echo 'sources='"$VALUE" >> "$GITHUB_OUTPUT"
+          SOURCE_VALUE=$(cat config/source.json | jq -M -c keys)
+          PKG_VALUE=$(cat config/pkg.json | jq -M -c keys)
+          echo 'sources='"$SOURCE_VALUE" >> "$GITHUB_OUTPUT"
+          echo 'pkgs='"$PKG_VALUE" >> "$GITHUB_OUTPUT"
 
   # parse
+  download-pkg:
+    name: "Download package ${{ matrix.pkg }}"
+    runs-on: ubuntu-latest
+    needs: define-matrix
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        pkg: ${{ fromJSON(needs.define-matrix.outputs.pkgs) }}
+      fail-fast: false
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+        with:
+          repository: crazywhalecc/static-php-cli
+      - name: "Setup static-php environment"
+        run: |
+          bin/setup-runtime
+          bin/php bin/composer install --no-dev --no-ansi -q --no-interaction
+      - name: "Download package ${{ matrix.pkg }}"
+        run: bin/php bin/spc install-pkg ${{ matrix.pkg }} --debug --no-alt --shallow-clone
+      - name: "Parse lock file and re-package with file"
+        run: |
+          rename_file() {
+              local src_file="$1"
+              local target="$2"
+              local destination_dir="$3"
+              
+              if [[ ! -f "$src_file" ]]; then
+                  echo "Error: '$src_file' is not a valid file" >&2
+                  return 1
+              fi
+              
+              if [[ "$src_file" =~ \.tar\.(gz|xz)$ ]]; then
+                  local ext=".tar.${BASH_REMATCH[1]}"
+                  local base_name="${src_file%$ext}"
+                  if [[ -z "$base_name" ]]; then
+                      echo "Error: Invalid filename '$src_file'" >&2
+                      return 1
+                  fi
+                  
+              elif [[ "$src_file" =~ \.[^./]+$ ]]; then
+                  local ext=".${src_file##*.}"
+                  local base_name="${src_file%.$ext}"
+              else
+                  echo "Skip: '$src_file' has no extension" >&2
+                  return 0
+              fi
+              
+              local new_name="${target}${ext}"
+              cp -- "$src_file" "$new_name"
+              mv "$new_name" "$destination_dir"/
+              echo "Renamed: $src_file -> $destination_dir/$new_name"
+          }
+          mkdir downloads-mirror-${{ matrix.pkg }}
+          SOURCE_TYPE=$(cat downloads/.lock.json | jq -M -c -r '."${{ matrix.pkg }}".source_type')
+          if [ "$SOURCE_TYPE" = "archive" ]; then
+            cd downloads
+            rename_file $(cat .lock.json | jq -M -c -r '."${{ matrix.pkg }}".filename') ${{ matrix.pkg }}-spc-mirror ../downloads-mirror-${{ matrix.pkg }}
+            cd ..
+          else
+            cd downloads
+            tar --exclude-vcs -czvf ${{ matrix.pkg }}-spc-mirror.tgz $(cat .lock.json | jq -M -c -r '."${{ matrix.pkg }}".dirname')
+            mv ${{ matrix.pkg }}-spc-mirror.tgz ../downloads-mirror-${{ matrix.pkg }}/
+            cd ..
+          fi
+      - name: "Deploy to OSS"
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: downloads-mirror-${{ matrix.pkg }}/
+          destination_dir: static-php-cli/deps/spc-download-mirror/${{ matrix.pkg }}/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
   download-source:
-    name: "Download ${{ matrix.source }}"
+    name: "Download source ${{ matrix.source }}"
     runs-on: ubuntu-latest
     needs: define-matrix
     timeout-minutes: 60
