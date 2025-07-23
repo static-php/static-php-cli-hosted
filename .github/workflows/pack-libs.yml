@@ -36,7 +36,6 @@ jobs:
           - windows-2022
           - macos-14
         lib:
-          - attr
           - gmssl
           - jbig
           - lerc
@@ -54,7 +53,6 @@ jobs:
           - libiconv
           - libavif
           - libpng
-          - libtiff
           - icu
           - libcares
           - libevent
@@ -77,7 +75,6 @@ jobs:
           - { runner: "windows-2022", lib: "brotli" }
           - { runner: "windows-2022", lib: "libargon2" }
           - { runner: "windows-2022", lib: "libiconv" }
-          - { runner: "windows-2022", lib: "libtiff" }
           - { runner: "windows-2022", lib: "icu" }
           - { runner: "windows-2022", lib: "libcares" }
           - { runner: "windows-2022", lib: "libevent" }
@@ -89,7 +86,6 @@ jobs:
           - { runner: "windows-2022", lib: "libaom" }
           - { runner: "windows-2022", lib: "libde265" }
           - { runner: "windows-2022", lib: "libheif" }
-          - { runner: "windows-2022", lib: "attr" }
           - { runner: "windows-2022", lib: "jbig" }
           - { runner: "windows-2022", lib: "lerc" }
           - { runner: "windows-2022", lib: "libacl" }
