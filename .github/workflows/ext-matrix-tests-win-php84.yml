@@ -1,0 +1,120 @@
+name: "Extension matrix tests PHP 8.4 (Windows)"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 5"
+
+jobs:
+  test:
+    name: "${{ matrix.extension }} (PHP ${{ matrix.php-version }} on ${{ matrix.operating-system }})"
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        extension:
+          - amqp
+          - apcu
+          - bcmath
+          - bz2
+          - calendar
+          - ctype
+          - curl
+          - dba
+          - dom
+          - ds
+          - exif
+          - ffi
+          - fileinfo
+          - filter
+          - ftp
+          - gd
+          - iconv
+          - igbinary
+          - libxml
+          - mbregex
+          - mbstring
+          - mysqli
+          - mysqlnd
+          - opcache
+          - openssl
+          - pdo
+          - pdo_mysql
+          - pdo_sqlite
+          - pdo_sqlsrv
+          - phar
+          - rar
+          - redis
+          - session
+          - shmop
+          - simdjson
+          - simplexml
+          - soap
+          - sockets
+          - sqlite3
+          - sqlsrv
+          - ssh2
+          - sysvshm
+          - tokenizer
+          - xml
+          - xmlreader
+          - xmlwriter
+          - yac
+          - yaml
+          - zip
+          - zlib
+        php-version:
+          - "8.4"
+        operating-system:
+          - "windows-latest"
+    
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Checkout remote"
+        if: github.repository != 'crazywhalecc/static-php-cli'
+        uses: actions/checkout@v4
+        with:
+          repository: crazywhalecc/static-php-cli
+          ref: main
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          tools: pecl, composer
+          extensions: curl, openssl, mbstring, filter
+          ini-values: memory_limit=-1
+
+      - name: "Cache composer packages"
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php
+
+      - id: cache-download
+        uses: actions/cache@v4
+        with:
+          path: downloads
+          key: php-${{ matrix.php-version }}-dependencies-for-tests-windows
+      
+      - name: "Install Dependencies"
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
+
+      - name: "Validate SPC powershell script"
+        run: bin/spc --version
+
+      # If there's no dependencies cache, fetch sources
+      - name: "Download sources"
+        env:
+          GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
+        run: bin/spc download --with-php=${{ matrix.php-version }} --for-extensions=${{ matrix.extension }}
+
+      - name: "Build library: ${{ matrix.extension }}"
+        run: |
+          bin/spc doctor --auto-fix
+          bin/spc build --build-cli --build-micro ${{ matrix.extension }} --debug --with-suggested-libs --with-suggested-exts 
