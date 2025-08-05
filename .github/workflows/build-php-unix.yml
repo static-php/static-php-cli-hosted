@@ -137,7 +137,7 @@ jobs:
       - name: "Download sources"
         env:
           GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
-        run: ${{ steps.process-env.outputs.CMD }} download --with-php=${{ matrix.php-version }} --for-extensions=${{ steps.process-env.outputs.EXTENSIONS }} --retry=5 --prefer-pre-built
+        run: ${{ steps.process-env.outputs.CMD }} download --with-php=${{ matrix.php-version }} --for-extensions=${{ steps.process-env.outputs.EXTENSIONS }} --retry=5 --prefer-pre-built --ignore-cache-sources=php-src
 
       - name: "Build library: ${{ matrix.library }}"
         run: |
