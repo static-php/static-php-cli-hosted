@@ -40,10 +40,14 @@ jobs:
           macos-*)
             bin/setup-runtime
             export PATH="$(pwd)/bin:$PATH"
+            composer install --no-dev
             bin/spc doctor --auto-fix
             echo "SPC_PREFIX=bin/spc" >> "$GITHUB_OUTPUT"
             ;;
           esac
+
+      - name: "Download package ${{ matrix.pkg }}"
+        run: ${{ steps.setup-runtime.outputs.SPC_PREFIX }} download --for-libs=${{ matrix.pkg }} --ignore-cache-sources
 
       - name: "Build package ${{ matrix.pkg }}"
         run: ${{ steps.setup-runtime.outputs.SPC_PREFIX }} build:libs ${{ matrix.pkg }} --debug
