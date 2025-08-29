@@ -20,7 +20,7 @@ jobs:
             runner: "macos-13"
           - name: "x86_64-linux"
             runner: "ubuntu-latest"
-          - name: "aarch"
+          - name: "aarch64-linux"
             runner: "ubuntu-24.04-arm"
     steps:
       - name: "Checkout remote"
@@ -33,11 +33,11 @@ jobs:
         id: setup-runtime
         run: |
           case "${{ matrix.os.name }}" in
-          linux-*) 
+          *-linux) 
             bin/spc-alpine-docker --help
             echo "SPC_PREFIX=bin/spc-alpine-docker" >> "$GITHUB_OUTPUT"
             ;;
-          macos-*)
+          *-darwin)
             bin/setup-runtime
             export PATH="$(pwd)/bin:$PATH"
             echo "$(pwd)/bin" >> $GITHUB_PATH
@@ -70,6 +70,3 @@ jobs:
           path: |
             buildroot/
           if-no-files-found: error
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
