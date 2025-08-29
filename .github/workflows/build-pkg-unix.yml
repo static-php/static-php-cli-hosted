@@ -75,3 +75,6 @@ jobs:
           path: |
             buildroot/
           if-no-files-found: error
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
