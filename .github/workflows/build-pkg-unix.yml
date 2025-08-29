@@ -1,4 +1,4 @@
-name: "Build Packages (Unix)"
+name: "Build Package Distributable (Unix)"
 
 on:
   workflow_dispatch:
@@ -7,20 +7,20 @@ on:
 
 jobs:
   build-packages:
-    name: "Build package ${{ matrix.pkg }}-${{ matrix.os.name }}"
+    name: "Build package distributable ${{ matrix.pkg }}-${{ matrix.os.name }}"
     runs-on: ${{ matrix.os.runner }}
     strategy:
       fail-fast: false
       matrix:
         pkg: ["pkg-config"]
         os:
-          - name: "macos-aarch64"
+          - name: "aarch64-darwin"
             runner: "macos-15"
-          - name: "macos-x86_64"
+          - name: "x86_64-darwin"
             runner: "macos-13"
-          - name: "linux-x86_64"
+          - name: "x86_64-linux"
             runner: "ubuntu-latest"
-          - name: "linux-aarch64"
+          - name: "aarch"
             runner: "ubuntu-24.04-arm"
     steps:
       - name: "Checkout remote"
@@ -51,13 +51,8 @@ jobs:
         run: ${{ steps.setup-runtime.outputs.SPC_PREFIX }} download --for-libs=${{ matrix.pkg }} --ignore-cache-sources
 
       - name: "Build package ${{ matrix.pkg }}"
-        run: ${{ steps.setup-runtime.outputs.SPC_PREFIX }} build:libs ${{ matrix.pkg }} --debug
-      
-      - name: "Pack package ${{ matrix.pkg }}"
-        run: |
-          mkdir -p dist
-          tar -czf dist/${{ matrix.pkg }}-${{ matrix.os.name }}.tar.gz -C buildroot .
-      
+        run: ${{ steps.setup-runtime.outputs.SPC_PREFIX }} dev:pack-lib ${{ matrix.pkg }} --debug
+
       - name: "Deploy to self-hosted OSS"
         uses: static-php/upload-s3-action@v1.0.0
         with:
