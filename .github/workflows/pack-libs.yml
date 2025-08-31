@@ -209,3 +209,13 @@ jobs:
         run: |
           ref="$(gh release view --repo static-php/static-php-cli-hosted --json tagName --jq '.tagName')"
           gh release upload "$ref" "dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.${{ steps.process-env.outputs.SUFFIX }}" --repo static-php/static-php-cli-hosted --clobber
+      
+      - name: "Deploy to self-hosted OSS"
+        uses: static-php/upload-s3-action@v1.0.0
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: "dist/"
+          destination_dir: static-php-cli/pre-built/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
