@@ -211,6 +211,7 @@ jobs:
           gh release upload "$ref" "dist/${{ matrix.lib }}-${{ steps.process-env.outputs.ARCH }}-${{ steps.process-env.outputs.OS }}.${{ steps.process-env.outputs.SUFFIX }}" --repo static-php/static-php-cli-hosted --clobber
       
       - name: "Deploy to self-hosted OSS"
+        if: github.repository == 'static-php/static-php-cli-hosted' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
         uses: static-php/upload-s3-action@v1.0.0
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
