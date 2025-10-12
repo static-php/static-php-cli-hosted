@@ -32,9 +32,9 @@ jobs:
           - ubuntu-22.04 # x86_64 glibc
           - ubuntu-24.04-arm # aarch64 musl
           - ubuntu-22.04-arm # aarch64 glibc
-          - macos-13
+          - macos-15-intel
           - windows-2022
-          - macos-14
+          - macos-15
         lib:
           - gmssl
           - jbig
@@ -89,8 +89,8 @@ jobs:
           - { runner: "windows-2022", lib: "jbig" }
           - { runner: "windows-2022", lib: "lerc" }
           - { runner: "windows-2022", lib: "libacl" }
-          - { runner: "macos-13", lib: "libacl" }
-          - { runner: "macos-14", lib: "libacl" }
+          - { runner: "macos-15-intel", lib: "libacl" }
+          - { runner: "macos-15", lib: "libacl" }
       fail-fast: false
     steps:
       - name: "Process env string"
@@ -128,13 +128,13 @@ jobs:
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
               echo "SUFFIX=tgz" >> "$GITHUB_OUTPUT"
               ;;
-            macos-13)
+            macos-15-intel)
               echo "OS=darwin" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
               echo "SUFFIX=txz" >> "$GITHUB_OUTPUT"
               ;;
-            macos-14)
+            macos-15)
               echo "OS=darwin" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
