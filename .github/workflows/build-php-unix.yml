@@ -19,9 +19,9 @@ jobs:
           - "8.4"
         runner:
           - "ubuntu-latest"
-          - "macos-13"
+          - "macos-15-intel"
           - "ubuntu-24.04-arm"
-          - "macos-14"
+          - "macos-15"
           - "ubuntu-22.04"
           - "ubuntu-22.04-arm"
         combination:
@@ -32,8 +32,8 @@ jobs:
         exclude:
           - { runner: "ubuntu-latest", combination: "gnu-bulk" }
           - { runner: "ubuntu-24.04-arm", combination: "gnu-bulk" }
-          - { runner: "macos-13", combination: "gnu-bulk" }
-          - { runner: "macos-14", combination: "gnu-bulk" }
+          - { runner: "macos-15-intel", combination: "gnu-bulk" }
+          - { runner: "macos-15", combination: "gnu-bulk" }
           - { runner: "ubuntu-22.04", combination: "minimal" }
           - { runner: "ubuntu-22.04", combination: "bulk" }
           - { runner: "ubuntu-22.04", combination: "common" }
@@ -85,12 +85,12 @@ jobs:
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
               ;;
-            macos-13)
+            macos-15-intel)
               echo "OS=macos" >> "$GITHUB_OUTPUT"
               echo "ARCH=x86_64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
               ;;
-            macos-14)
+            macos-15)
               echo "OS=macos" >> "$GITHUB_OUTPUT"
               echo "ARCH=aarch64" >> "$GITHUB_OUTPUT"
               echo "CMD=bin/spc" >> "$GITHUB_OUTPUT"
