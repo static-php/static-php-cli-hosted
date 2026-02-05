@@ -83,6 +83,7 @@ jobs:
           - zstd
         php-version:
           - "8.4"
+          - "8.5"
         operating-system:
           - "ubuntu-latest"
           #- "macos-15-intel"
