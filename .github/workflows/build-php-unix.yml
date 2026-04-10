@@ -136,6 +136,12 @@ jobs:
 
       - run: ${{ steps.process-env.outputs.CMD }} doctor --auto-fix
 
+      - name: "ACLOCAL"
+        run: |
+          autoconf --version
+          aclocal --print-ac-dir
+          echo $ACLOCAL_PATH
+
       # If there's no dependencies cache, fetch sources
       - name: "Download sources"
         env:
