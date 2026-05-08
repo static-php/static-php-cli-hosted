@@ -43,7 +43,7 @@ jobs:
         combo: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
     env:
       SPC_USE_SUDO: "yes"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.S_GITHUB_TOKEN }}
 
     steps:
       - name: "Checkout"
@@ -75,7 +75,7 @@ jobs:
         run: ./bin/spc doctor --auto-fix
 
       - name: "Build (PHP 8.2)"
-        run: ./bin/spc build ${{ matrix.combo.build-args }} --dl-with-php=8.2 --with-suggests -vvv
+        run: ./bin/spc build ${{ matrix.combo.build-args }} --dl-with-php=8.2 --with-suggests -vvv --no-ansi
 
       - name: "Switch to PHP 8.5"
         run: ./bin/spc switch-php-version 8.5
