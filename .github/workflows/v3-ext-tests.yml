@@ -1,0 +1,84 @@
+name: "Extension Matrix Tests"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 1"
+
+jobs:
+  generate-matrix:
+    name: "Generate extension test matrix"
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          repository: crazywhalecc/static-php-cli
+          ref: v3-docs/readme
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer
+          extensions: curl, openssl, mbstring
+          ini-values: memory_limit=-1
+
+      - name: "Install Dependencies"
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
+
+      - name: "Generate matrix"
+        id: gen
+        run: echo "matrix=$(./bin/spc dev:gen-ext-test-matrix)" >> $GITHUB_OUTPUT
+
+  test:
+    name: "${{ matrix.combo.extension }} (${{ matrix.combo.os }}-${{ matrix.combo.arch }})"
+    needs: generate-matrix
+    runs-on: ${{ matrix.combo.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        combo: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+    env:
+      SPC_USE_SUDO: "yes"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          repository: crazywhalecc/static-php-cli
+          ref: v3-docs/readme
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer
+          extensions: curl, openssl, mbstring
+          ini-values: memory_limit=-1
+
+      - name: "Install Dependencies"
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
+
+      - name: "Restore pkgroot cache"
+        uses: actions/cache@v4
+        with:
+          path: pkgroot/${{ matrix.combo.arch }}-${{ matrix.combo.os }}
+          key: pkgroot-${{ matrix.combo.arch }}-${{ matrix.combo.os }}-${{ hashFiles('config/pkg/**', 'config/artifact/**') }}
+          restore-keys: |
+            pkgroot-${{ matrix.combo.arch }}-${{ matrix.combo.os }}-
+
+      - name: "Doctor"
+        run: ./bin/spc doctor --auto-fix
+
+      - name: "Build (PHP 8.2)"
+        run: ./bin/spc build ${{ matrix.combo.build-args }} --dl-with-php=8.2 --with-suggests
+
+      - name: "Switch to PHP 8.5"
+        run: ./bin/spc switch-php-version 8.5
+
+      - name: "Build (PHP 8.5)"
+        run: ./bin/spc build ${{ matrix.combo.build-args }} --no-download --with-suggests
