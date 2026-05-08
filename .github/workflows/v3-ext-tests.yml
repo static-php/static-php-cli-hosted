@@ -13,7 +13,7 @@ jobs:
       matrix: ${{ steps.gen.outputs.matrix }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: crazywhalecc/static-php-cli
           ref: v3-docs/readme
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: crazywhalecc/static-php-cli
           ref: v3-docs/readme
@@ -64,7 +64,7 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
 
       - name: "Restore pkgroot cache"
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: pkgroot/${{ matrix.combo.arch }}-${{ matrix.combo.os }}
           key: pkgroot-${{ matrix.combo.arch }}-${{ matrix.combo.os }}-${{ hashFiles('config/pkg/**', 'config/artifact/**') }}
