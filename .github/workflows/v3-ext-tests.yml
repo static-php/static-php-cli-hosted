@@ -74,11 +74,14 @@ jobs:
       - name: "Doctor"
         run: ./bin/spc doctor --auto-fix
 
+      - name: "Download PHP 8.2"
+        run: ./bin/spc switch-php-version 8.2
+
       - name: "Build (PHP 8.2)"
-        run: ./bin/spc build ${{ matrix.combo.build-args }} --dl-with-php=8.2 --with-suggests -vvv
+        run: ${{ matrix.combo.build-args }}
 
       - name: "Switch to PHP 8.5"
         run: ./bin/spc switch-php-version 8.5
 
       - name: "Build (PHP 8.5)"
-        run: ./bin/spc build ${{ matrix.combo.build-args }} --no-download --with-suggests -vvv
+        run: ${{ matrix.combo.build-args }}
