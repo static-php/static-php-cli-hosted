@@ -1,4 +1,4 @@
-name: "Extension Matrix Tests"
+name: "v3 Extension Matrix Tests"
 
 on:
   workflow_dispatch:
