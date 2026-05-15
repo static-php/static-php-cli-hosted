@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: crazywhalecc/static-php-cli
-          ref: v3-docs/readme
+          ref: v3
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
