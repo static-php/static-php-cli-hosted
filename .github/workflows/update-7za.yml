@@ -1,0 +1,46 @@
+name: Update 7za.exe Tool
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 */3 *"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  update-7za:
+    name: "Download and upload 7za.exe"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Get latest 7zip release info"
+        id: get-release
+        run: |
+          TAG=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/ip7z/7zip/releases/latest | jq -r '.tag_name')
+          FNAME="7z$(echo "$TAG" | tr -d '.')-extra.7z"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "filename=$FNAME" >> "$GITHUB_OUTPUT"
+          echo "url=https://github.com/ip7z/7zip/releases/download/$TAG/$FNAME" >> "$GITHUB_OUTPUT"
+
+      - name: "Download 7zip extra package"
+        run: |
+          curl -L -o 7zip-extra.7z "${{ steps.get-release.outputs.url }}"
+
+      - name: "Install p7zip"
+        run: sudo apt-get install -y p7zip-full
+
+      - name: "Extract 7za.exe"
+        run: |
+          mkdir -p dist
+          7z e 7zip-extra.7z x64/7za.exe -odist/
+
+      - name: "Deploy to self-hosted OSS"
+        uses: static-php/upload-s3-action@v1.0.0
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          source_dir: "dist/"
+          destination_dir: v3/tools/7zip/
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
